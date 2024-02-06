@@ -21,6 +21,7 @@ public class CouponEntity {
     private String regex;
     private boolean usageCount;
     private double amount;
+    private String number;
 
     @ManyToOne
     @JoinColumn(name = "campaign_id")

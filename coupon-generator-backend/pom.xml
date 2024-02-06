@@ -44,7 +44,17 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.curious-odd-man</groupId>
+            <artifactId>rgxgen</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+
     </dependencies>
+
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

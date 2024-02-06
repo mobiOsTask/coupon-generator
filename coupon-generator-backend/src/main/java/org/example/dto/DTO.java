@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 @Data
 @AllArgsConstructor
@@ -11,8 +12,8 @@ import java.util.List;
 public class DTO {
     private int appId;
     private String campaignName;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private int couponCount;
     private List<CouponDTO> logic;
 }
