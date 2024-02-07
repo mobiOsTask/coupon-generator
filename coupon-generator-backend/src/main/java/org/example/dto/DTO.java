@@ -1,5 +1,6 @@
 package org.example.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 public class DTO {
     private int appId;
+
+    @NotBlank(message = "Invalid campaign Name")
     private String campaignName;
     private LocalDate startDate;
     private LocalDate endDate;

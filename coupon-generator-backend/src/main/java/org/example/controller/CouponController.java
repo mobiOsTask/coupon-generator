@@ -1,9 +1,11 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
 import org.example.dto.DTO;
 import org.example.entity.CouponEntity;
 import org.example.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,7 @@ public class CouponController {
 
 
     @PostMapping
-    public void createCoupon(@RequestBody DTO dto){
+    public void createCoupon(@Valid @RequestBody DTO dto){
         service.createCoupon(dto);
     }
 

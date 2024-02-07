@@ -87,7 +87,6 @@ public class CouponServiceImpl implements CouponService {
     public Set<String> validateCode(CouponDTO dto){
 
         if (dto.getRegex().trim().isEmpty()) {
-            System.out.println(dto.getRegex());
             throw new IllegalArgumentException("Regex cannot be null, empty, or contain only whitespace");
         }
         Set<String> codeSet = new HashSet<>();
@@ -111,7 +110,7 @@ public class CouponServiceImpl implements CouponService {
         }
 
 
-        if (dto.getStartDate().compareTo(dto.getEndDate()) > 0) {
+        if (dto.getStartDate().isAfter(dto.getEndDate())) {
             throw new IllegalArgumentException("Start Date should be before the end date");
         }
         return true;
@@ -121,12 +120,12 @@ public class CouponServiceImpl implements CouponService {
 
         List<String> values = Arrays.asList("rs", "point", "currency");
 
-        if (!values.contains(couponDto.getType().toLowerCase()) || couponDto.getRegex().trim().isEmpty()) {
+        if (!values.contains(couponDto.getType().toLowerCase()) || couponDto.getType().trim().isEmpty()) {
             throw new IllegalArgumentException("Type cannot contain values other than 'CURRENCY' and 'POINT'");
         }
 
 
-        if (!values.contains(couponDto.getDisplayValue().toLowerCase()) || couponDto.getRegex().trim().isEmpty()) {
+        if (!values.contains(couponDto.getDisplayValue().toLowerCase()) || couponDto.getDisplayValue().trim().isEmpty()) {
             throw new IllegalArgumentException("Display Value cannot contain values other than 'RS' and 'Point'");
         }
         return true;
