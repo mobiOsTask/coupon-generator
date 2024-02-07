@@ -19,9 +19,18 @@ public class CouponEntity {
     private String displayValue;
     private int length;
     private String regex;
-    private boolean usageCount;
+    private int usageCount;
     private double amount;
     private String number;
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isValid;
+
+    public void setIsValid(boolean isValid){
+        this.isValid = isValid;
+    }
+    public boolean getIsValid(){
+        return isValid;
+    }
 
     @ManyToOne
     @JoinColumn(name = "campaign_id")

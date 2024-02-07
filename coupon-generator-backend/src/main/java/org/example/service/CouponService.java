@@ -9,4 +9,5 @@ public interface CouponService {
     void createCoupon(DTO dto);
 
     List<CouponEntity> getCoupons();
+    boolean useCoupon(String number);
 }

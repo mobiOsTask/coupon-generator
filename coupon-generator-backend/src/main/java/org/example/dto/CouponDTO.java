@@ -14,6 +14,15 @@ public class CouponDTO {
     private String displayValue;
     private int length;
     private String regex;
-    private boolean usageCount;
+    private int usageCount;
     private double amount;
+    private boolean isValid;
+
+    public void setIsValid(boolean isValid){
+        this.isValid = isValid;
+    }
+
+    public boolean getIsValid(){
+        return isValid;
+    }
 }

@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.example.dto.CouponDTO;
 import org.example.dto.DTO;
 import org.example.entity.AppEntity;
@@ -50,16 +51,7 @@ public class CouponServiceImpl implements CouponService {
                 if (validateCouponDto(data)) {
                     Set<String> strings = validateCode(data);
                     for (String couponNumber : strings) {
-                        CouponEntity couponEntity = new CouponEntity();
-                        couponEntity.setCampaignEntity(campaignEntity);
-                        couponEntity.setCount(data.getCount());
-                        couponEntity.setType(data.getType());
-                        couponEntity.setAmount(data.getAmount());
-                        couponEntity.setDisplayValue(data.getDisplayValue());
-                        couponEntity.setUsageCount(data.isUsageCount());
-                        couponEntity.setLength(data.getLength());
-                        couponEntity.setRegex(data.getRegex());
-                        couponEntity.setNumber(couponNumber);
+                        CouponEntity couponEntity = getCouponEntity(data, couponNumber, campaignEntity);
 
                         coupon.add(couponEntity);
                     }
@@ -69,6 +61,21 @@ public class CouponServiceImpl implements CouponService {
             }
 
         }
+    }
+
+    private CouponEntity getCouponEntity(CouponDTO data, String couponNumber, CampaignEntity campaignEntity) {
+        CouponEntity couponEntity = new CouponEntity();
+        couponEntity.setCampaignEntity(campaignEntity);
+        couponEntity.setCount(data.getCount());
+        couponEntity.setType(data.getType());
+        couponEntity.setAmount(data.getAmount());
+        couponEntity.setDisplayValue(data.getDisplayValue());
+        couponEntity.setUsageCount(data.getUsageCount());
+        couponEntity.setIsValid(data.getIsValid());
+        couponEntity.setLength(data.getLength());
+        couponEntity.setRegex(data.getRegex());
+        couponEntity.setNumber(couponNumber);
+        return couponEntity;
     }
 
 
@@ -123,6 +130,21 @@ public class CouponServiceImpl implements CouponService {
             throw new IllegalArgumentException("Display Value cannot contain values other than 'RS' and 'Point'");
         }
         return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean useCoupon(String number) {
+        CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
+        boolean isUsed = false;
+        if(couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid())){
+
+            //change coupon status
+            if(couponRepository.updateCouponValidity(number) != 0){
+                isUsed = true;
+            }
+        }
+        return isUsed;
     }
 
     public String randomCode(String pattern, int length) {
