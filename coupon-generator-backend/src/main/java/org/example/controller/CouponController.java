@@ -26,7 +26,7 @@ public class CouponController {
     CouponService service;
 
 
-    @PostMapping
+    @PostMapping("save-coupons")
     public Map<String,String> createCoupon(@Valid @RequestBody DTO dto){
         Map<String,String> response = new HashMap<>();
         service.createCoupon(dto);
@@ -34,7 +34,7 @@ public class CouponController {
         return response;
     }
 
-    @GetMapping
+    @GetMapping("get-coupons")
     public Page<CouponEntity> getCoupons(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
