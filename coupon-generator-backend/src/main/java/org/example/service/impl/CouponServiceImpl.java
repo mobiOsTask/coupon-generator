@@ -2,14 +2,18 @@ package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.dto.CouponDTO;
+import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.entity.AppEntity;
 import org.example.entity.CampaignEntity;
 import org.example.entity.CouponEntity;
+import org.example.entity.CouponUserEntity;
 import org.example.repository.AppRepository;
 import org.example.repository.CampaignRepository;
 import org.example.repository.CouponRepository;
+import org.example.repository.CouponUserRepository;
 import org.example.service.CouponService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.curiousoddman.rgxgen.RgxGen;
@@ -27,6 +31,12 @@ public class CouponServiceImpl implements CouponService {
 
     @Autowired
     AppRepository appRepository;
+
+    @Autowired
+    CouponUserRepository couponUserRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     public void processData(DTO dto) {
 
@@ -131,19 +141,29 @@ public class CouponServiceImpl implements CouponService {
         return true;
     }
 
-    @Transactional
     @Override
-    public boolean useCoupon(String number) {
+    public boolean checkCoupon(String number) {
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
         boolean canUse = false;
-        if(couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid())){
 
-            //change coupon status
-            if(couponRepository.updateCouponValidity(number) != 0){
-                canUse = true;
-            }
+        // check the coupon can use or not
+        if(couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid())){
+            canUse = true;
         }
         return canUse;
+    }
+    @Transactional
+    @Override
+    public boolean useCoupon(CouponUserDTO couponUserDTO, String number) {
+        boolean isUsed = false;
+
+        // change coupon status
+        if(checkCoupon(number) && couponRepository.updateCouponValidity(number) != 0){
+            CouponUserEntity couponUserEntity = modelMapper.map(couponUserDTO, CouponUserEntity.class);
+            couponUserRepository.save(couponUserEntity);
+            isUsed = true;
+        }
+        return isUsed;
     }
 
     public String randomCode(String pattern, int length) {

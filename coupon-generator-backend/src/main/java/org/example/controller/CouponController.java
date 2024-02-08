@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
+import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.entity.CouponEntity;
 import org.example.service.CouponService;
@@ -29,9 +30,15 @@ public class CouponController {
         return service.getCoupons();
     }
 
-    @GetMapping("/use-coupon")
-    public ResponseEntity<String> useCoupon(@RequestParam("number") String number){
-        boolean canUse = service.useCoupon(number);
+    @GetMapping("/check-coupon")
+    public ResponseEntity<String> checkCoupon(@RequestParam("number") String number){
+        boolean canUse = service.checkCoupon(number);
         return new ResponseEntity<>(canUse ? "Coupon Can Use" : "Coupon Can't Use", HttpStatus.OK);
+    }
+
+    @GetMapping("/use-coupon")
+    public ResponseEntity<String> useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number){
+        boolean isUsed = service.useCoupon(couponUserDTO, number);
+        return new ResponseEntity<>(isUsed ? "Coupon Used" : "Coupon Use Failed", HttpStatus.OK);
     }
 }
