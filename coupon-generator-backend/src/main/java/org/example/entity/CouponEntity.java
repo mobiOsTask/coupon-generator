@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class CouponEntity {
         return isValid;
     }
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "campaign_id")
     private CampaignEntity campaignEntity;
