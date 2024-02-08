@@ -5,7 +5,6 @@ import org.example.dto.DTO;
 import org.example.entity.CouponEntity;
 import org.example.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,7 @@ public class CouponController {
 
     @GetMapping("/use-coupon")
     public ResponseEntity<String> useCoupon(@RequestParam("number") String number){
-        boolean isUsed = service.useCoupon(number);
-        return new ResponseEntity<>(isUsed ? "Coupon Can Use" : "Coupon Can't Use", HttpStatus.OK);
+        boolean canUse = service.useCoupon(number);
+        return new ResponseEntity<>(canUse ? "Coupon Can Use" : "Coupon Can't Use", HttpStatus.OK);
     }
 }

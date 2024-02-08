@@ -38,7 +38,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public void updateApp(AppDTO appDTO, int appId) {
         AppEntity appEntity = appRepository.findById(appId).get();
-        appEntity.setAppId(appDTO.getAppId());
+
         appEntity.setAppName(appDTO.getAppName());
         appEntity.setWebSiteURL(appDTO.getWebSiteURL());
         appEntity.setContactNumber(appDTO.getContactNumber());

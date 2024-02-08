@@ -135,15 +135,15 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public boolean useCoupon(String number) {
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
-        boolean isUsed = false;
+        boolean canUse = false;
         if(couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid())){
 
             //change coupon status
             if(couponRepository.updateCouponValidity(number) != 0){
-                isUsed = true;
+                canUse = true;
             }
         }
-        return isUsed;
+        return canUse;
     }
 
     public String randomCode(String pattern, int length) {
