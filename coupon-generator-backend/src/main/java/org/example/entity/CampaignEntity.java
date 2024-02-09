@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "campaign")
-public class CampaignEntity {
+public class CampaignEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int campaignId;

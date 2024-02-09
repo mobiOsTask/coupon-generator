@@ -1,12 +1,25 @@
 package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.example.dto.ApiResponse;
 import org.example.dto.CouponDTO;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.entity.*;
 import org.example.repository.*;
+import org.example.entity.AppEntity;
+import org.example.entity.CampaignEntity;
+import org.example.entity.CouponEntity;
+import org.example.entity.CouponUserEntity;
+import org.example.exception.DLAppValidationsException;
+import org.example.repository.AppRepository;
+import org.example.repository.CampaignRepository;
+import org.example.repository.CouponRepository;
+import org.example.repository.CouponUserRepository;
 import org.example.service.CouponService;
+import org.example.util.Messages;
+import org.example.util.RequestStatus;
+import org.example.util.ResponseCodes;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,18 +53,25 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    Messages messages;
+
 
     @Override
-    public void createCoupon(DTO dto) {
+    public ApiResponse createCoupon(DTO dto) {
         processData(dto);
+        ApiResponse response = new ApiResponse();
+        response.setResponseCode(ResponseCodes.SUCCESS);
+        response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        response.setMessage("Coupons saved succesfully");
+        return response;
     }
 
-    @Transactional
-    public void saveCouponEntity(List<CouponEntity> couponEntityList) {
-        couponRepository.saveAll(couponEntityList);
-        System.out.println(Thread.currentThread().getName());
-
-    }
+//    @Transactional
+//    public void saveCouponEntity(List<CouponEntity> couponEntityList) {
+//        couponRepository.saveAll(couponEntityList);
+//
+//    }
 
     @Transactional
     public void processData(DTO dto) {
@@ -63,17 +83,17 @@ public class CouponServiceImpl implements CouponService {
             campaignRepository.save(campaignEntity);
 
             dto.getLogic().parallelStream().forEach(data -> {
+                System.out.println("Thread: " + Thread.currentThread().getName());
                 if (validateCouponDTO(data)) {
                     Set<String> strings = validateCouponNumber(data);
-                    List<CouponEntity> coupons = strings.stream()
+                    List<CouponEntity> coupons = strings.parallelStream()
                             .map(couponNumber -> getCouponEntity(data, couponNumber, campaignEntity))
                             .collect(Collectors.toList());
-
-                    if (!coupons.isEmpty()) {
-                        saveCouponEntity(coupons);
-                    }
+                    couponRepository.saveAll(coupons);
                 }
             });
+
+
         }
     }
 
@@ -115,7 +135,7 @@ public class CouponServiceImpl implements CouponService {
     public Set<String> validateCouponNumber(CouponDTO dto) {
 
         if (dto.getRegex().trim().isEmpty()) {
-            throw new IllegalArgumentException("Regex cannot be null, empty, or contain only whitespace");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Pattern Cannot be Empty");
         }
         Set<String> codeSet = new HashSet<>();
         while (codeSet.size() < dto.getCount()) {
@@ -139,7 +159,7 @@ public class CouponServiceImpl implements CouponService {
                 .sum();
 
         if (totalCouponCount != dto.getCouponCount() || dto.getCouponCount() < 0) {
-            throw new IllegalArgumentException("Invalid coupon count");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Invalid Coupon Count");
         }
 
         validateDateRange(dto.getStartDate(), dto.getEndDate());
@@ -149,11 +169,11 @@ public class CouponServiceImpl implements CouponService {
 
     private void validateDateRange(LocalDate startDate, LocalDate endDate) {
         if (Objects.isNull(startDate) || Objects.isNull(endDate)) {
-            throw new IllegalArgumentException("Start date or End date cannot be empty");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Start date or End date cannot be empty");
         }
 
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start Date should be before the end date");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Start Date should be before the end date");
         }
     }
 
@@ -162,12 +182,13 @@ public class CouponServiceImpl implements CouponService {
         List<String> values = Arrays.asList("rs", "point", "currency");
 
         if (!values.contains(couponDto.getType().toLowerCase()) || couponDto.getType().trim().isEmpty()) {
-            throw new IllegalArgumentException("Type cannot contain values other than 'CURRENCY' and 'POINT'");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Type cannot contain values other than 'CURRENCY' and 'POINT'");
+
         }
 
 
         if (!values.contains(couponDto.getDisplayValue().toLowerCase()) || couponDto.getDisplayValue().trim().isEmpty()) {
-            throw new IllegalArgumentException("Display Value cannot contain values other than 'RS' and 'Point'");
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Display Value cannot contain values other than 'RS' and 'Point'");
         }
         return true;
     }
@@ -188,6 +209,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public boolean useCoupon(CouponUserDTO couponUserDTO, String number) {
         boolean isUsed = false;
+
         // change coupon status
         if (couponUserDTO.getUser() != null && checkCoupon(number)) {
             CouponUserEntity couponUserEntity = modelMapper.map(couponUserDTO, CouponUserEntity.class);
@@ -218,8 +240,14 @@ public class CouponServiceImpl implements CouponService {
 
 
     @Override
-    public Page<CouponEntity> getCoupons(Pageable pageable) {
-        return couponRepository.findAll(pageable);
+    public ApiResponse getCoupons(Pageable pageable) {
+        Page<CouponEntity> all = couponRepository.findAll(pageable);
+        ApiResponse response = new ApiResponse();
+        response.setCouponList(all);
+        response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        response.setResponseCode(ResponseCodes.SUCCESS);
+        return response;
+
     }
 
 

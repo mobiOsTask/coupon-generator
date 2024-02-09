@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "coupon")
-public class CouponEntity {
+public class CouponEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int couponId;
