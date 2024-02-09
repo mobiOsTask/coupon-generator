@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class CouponUserDTO {
     private int usedCouponId;
+    private String number;
     private LocalDate usedDate;
     private LocalTime usedTime;
     private UserDTO user;

@@ -17,6 +17,7 @@ public class CouponUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int usedCouponId;
+    private String number;
     private LocalDate usedDate;
     private LocalTime usedTime;
     @ManyToOne
