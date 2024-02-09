@@ -17,5 +17,9 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     @Query("UPDATE CouponEntity c SET c.isValid = false WHERE c.number = :number")
     int updateCouponValidity(@Param("number") String number);
 
+    @Modifying
+    @Query("UPDATE CouponEntity c SET c.usageCount = :couponUsageCount WHERE c.number = :number")
+    int updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
+
     Page<CouponEntity> findAll(Pageable pageable);
 }

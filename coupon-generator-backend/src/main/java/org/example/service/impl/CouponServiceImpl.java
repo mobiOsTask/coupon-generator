@@ -178,7 +178,7 @@ public class CouponServiceImpl implements CouponService {
         boolean canUse = false;
 
         // check the coupon can use or not
-        if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()))) {
+        if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1)) {
             canUse = true;
         }
         return canUse;
@@ -192,12 +192,28 @@ public class CouponServiceImpl implements CouponService {
         if (couponUserDTO.getUser() != null && checkCoupon(number)) {
             CouponUserEntity couponUserEntity = modelMapper.map(couponUserDTO, CouponUserEntity.class);
             Optional<UserEntity> userEntity = userRepository.findById(couponUserEntity.getUser().getUserId());
-            if((userEntity.isPresent()) && couponRepository.updateCouponValidity(number) != 0) {
+
+            if(userEntity.isPresent()) {
+                CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
+                // change isValid if usage count == 1
+                if(couponEntity.getUsageCount() == 1){
+                    isUsed = couponRepository.updateCouponValidity(number) != 0;
+                // change coupon usage
+                }else if (couponEntity.getUsageCount() > 1){
+                    isUsed = changeCouponUsageCount(number) != 0;
+                }
                 couponUserRepository.save(couponUserEntity);
-                isUsed = true;
             }
         }
         return isUsed;
+    }
+
+    @Override
+    public int changeCouponUsageCount(String number) {
+        CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
+        int couponUsageCount = couponEntity.getUsageCount();
+        couponUsageCount--;
+        return couponRepository.updateCouponUsageCount(couponUsageCount, number);
     }
 
 

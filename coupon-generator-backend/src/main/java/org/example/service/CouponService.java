@@ -15,4 +15,5 @@ public interface CouponService {
 
     boolean checkCoupon(String number);
     boolean useCoupon(CouponUserDTO couponUserDTO, String number);
+    int changeCouponUsageCount(String number);
 }
