@@ -1,13 +1,14 @@
 package org.example.service;
 
+import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.entity.UserEntity;
 
 import java.util.List;
 
 public interface UserService {
-    void addUser(UserDTO userDTO);
-    List<UserEntity> getUsers();
-    void deleteUser(int userId);
-    void updateUser(UserDTO userDTO, int userId);
+    ApiResponse addUser(UserDTO userDTO);
+    ApiResponse getUsers();
+    ApiResponse deleteUser(int userId);
+    ApiResponse updateUser(UserDTO userDTO, int userId);
 }

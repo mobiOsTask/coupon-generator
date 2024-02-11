@@ -1,9 +1,12 @@
 package org.example.service.impl;
 
+import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.entity.UserEntity;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.example.util.RequestStatus;
+import org.example.util.ResponseCodes;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,28 +23,52 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
 
     @Override
-    public void addUser(UserDTO userDTO) {
+    public ApiResponse addUser(UserDTO userDTO) {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
         userRepository.save(userEntity);
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+        apiResponse.setMessage("User Added Successfully");
+        return apiResponse;
     }
 
     @Override
-    public List<UserEntity> getUsers() {
-        return userRepository.findAll();
+    public ApiResponse getUsers() {
+        List<UserEntity> userEntities = userRepository.findAll();
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setUserList(userEntities);
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+        return apiResponse;
     }
 
     @Override
-    public void deleteUser(int userId) {
+    public ApiResponse deleteUser(int userId) {
         userRepository.deleteById(userId);
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+        apiResponse.setMessage("User Deleted Successfully");
+        return apiResponse;
     }
 
     @Override
-    public void updateUser(UserDTO userDTO, int userId) {
+    public ApiResponse updateUser(UserDTO userDTO, int userId) {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
         UserEntity userEntityNew = userRepository.findById(userId).get();
 
         userEntityNew.setUserName(userEntity.getUserName());
         userEntityNew.setAddress(userEntity.getAddress());
         userRepository.save(userEntityNew);
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+        apiResponse.setMessage("User Updated Successfully");
+        return apiResponse;
     }
 }
