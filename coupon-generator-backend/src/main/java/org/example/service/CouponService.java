@@ -10,7 +10,7 @@ public interface CouponService {
 
     ApiResponse getCoupons(Pageable pageable);
 
-    boolean checkCoupon(String number);
-    boolean useCoupon(CouponUserDTO couponUserDTO, String number);
-    int changeCouponUsageCount(String number);
+    ApiResponse checkCoupon(String number);
+    ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number);
+    void changeCouponUsageCount(String number);
 }

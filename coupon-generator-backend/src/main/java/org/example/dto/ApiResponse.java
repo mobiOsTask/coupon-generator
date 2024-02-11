@@ -19,7 +19,7 @@ public class ApiResponse extends  Response{
     Page<CouponEntity> couponList;
     List<CampaignEntity> campaignList;
     List<AppEntity> appList;
-    List<UserEntity> UserList;
+    List<UserEntity> userList;
 
     CouponEntity couponEntity;
 

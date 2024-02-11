@@ -18,8 +18,13 @@ public class CouponUserEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int usedCouponId;
     private String number;
+
+    @Column(nullable = false)
     private LocalDate usedDate;
+
+    @Column(nullable = false)
     private LocalTime usedTime;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

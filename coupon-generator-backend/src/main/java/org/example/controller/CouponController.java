@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,14 +42,12 @@ public class CouponController {
     }
 
     @GetMapping("/check-coupon")
-    public ResponseEntity<String> checkCoupon(@RequestParam("number") String number){
-        boolean canUse = service.checkCoupon(number);
-        return new ResponseEntity<>(canUse ? "Coupon Can Use" : "Coupon Can't Use", HttpStatus.OK);
+    public ApiResponse checkCoupon(@RequestParam("number") String number){
+        return service.checkCoupon(number);
     }
 
     @GetMapping("/use-coupon")
-    public ResponseEntity<String> useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number){
-        boolean isUsed = service.useCoupon(couponUserDTO, number);
-        return new ResponseEntity<>(isUsed ? "Coupon Used" : "Coupon Use Failed", HttpStatus.OK);
+    public ApiResponse useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number){
+        return service.useCoupon(couponUserDTO, number);
     }
 }

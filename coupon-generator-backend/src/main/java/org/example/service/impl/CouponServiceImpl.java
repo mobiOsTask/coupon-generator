@@ -194,48 +194,65 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public boolean checkCoupon(String number) {
+    public ApiResponse checkCoupon(String number) {
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
-        boolean canUse = false;
+        ApiResponse apiResponse = new ApiResponse();
 
         // check the coupon can use or not
         if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1)) {
-            canUse = true;
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+            apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage("Coupon Can Use");
+        }else {
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
+            apiResponse.setMessage("Coupon Can't Use");
         }
-        return canUse;
+        return apiResponse;
     }
 
     @Transactional
     @Override
-    public boolean useCoupon(CouponUserDTO couponUserDTO, String number) {
-        boolean isUsed = false;
+    public ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number) {
+
+        ApiResponse apiResponse = new ApiResponse();
 
         // change coupon status
-        if (couponUserDTO.getUser() != null && checkCoupon(number)) {
+        if (couponUserDTO.getUsedDate() != null && couponUserDTO.getUsedTime() != null && couponUserDTO.getUser() != null && Objects.equals(checkCoupon(number).getResponseCode(), ResponseCodes.SUCCESS)) {
             CouponUserEntity couponUserEntity = modelMapper.map(couponUserDTO, CouponUserEntity.class);
             Optional<UserEntity> userEntity = userRepository.findById(couponUserEntity.getUser().getUserId());
+            CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
 
             if(userEntity.isPresent()) {
-                CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
                 // change isValid if usage count == 1
                 if(couponEntity.getUsageCount() == 1){
-                    isUsed = couponRepository.updateCouponValidity(number) != 0;
+                    couponRepository.updateCouponValidity(number);
                 // change coupon usage
                 }else if (couponEntity.getUsageCount() > 1){
-                    isUsed = changeCouponUsageCount(number) != 0;
+                    changeCouponUsageCount(number);
                 }
                 couponUserRepository.save(couponUserEntity);
+                apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+                apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+                apiResponse.setMessage("Coupon Used Successfully");
+            }else{
+                apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+                apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
+                apiResponse.setMessage("Coupon Failed to Apply because of User Not Found");
             }
+        }else{
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
+            apiResponse.setMessage("Coupon Failed to Apply");
         }
-        return isUsed;
+        return apiResponse;
     }
-
     @Override
-    public int changeCouponUsageCount(String number) {
+    public void changeCouponUsageCount(String number) {
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
         int couponUsageCount = couponEntity.getUsageCount();
         couponUsageCount--;
-        return couponRepository.updateCouponUsageCount(couponUsageCount, number);
+        couponRepository.updateCouponUsageCount(couponUsageCount, number);
     }
 
 
