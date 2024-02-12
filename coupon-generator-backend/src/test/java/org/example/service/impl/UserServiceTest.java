@@ -1,8 +1,9 @@
+package org.example.service.impl;
+
 import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.entity.UserEntity;
 import org.example.repository.UserRepository;
-import org.example.service.impl.UserServiceImpl;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
 import org.junit.jupiter.api.Test;

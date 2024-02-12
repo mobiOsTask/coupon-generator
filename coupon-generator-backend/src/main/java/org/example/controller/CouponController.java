@@ -46,7 +46,7 @@ public class CouponController {
         return service.checkCoupon(number);
     }
 
-    @GetMapping("/use-coupon")
+    @PostMapping("/use-coupon")
     public ApiResponse useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number){
         return service.useCoupon(couponUserDTO, number);
     }

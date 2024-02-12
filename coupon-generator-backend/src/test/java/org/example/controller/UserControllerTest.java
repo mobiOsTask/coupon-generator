@@ -1,4 +1,5 @@
-import org.example.controller.UserController;
+package org.example.controller;
+
 import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.service.UserService;

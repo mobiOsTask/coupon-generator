@@ -1,4 +1,5 @@
-import org.example.controller.AppController;
+package org.example.controller;
+
 import org.example.dto.ApiResponse;
 import org.example.dto.AppDTO;
 import org.example.service.AppService;
