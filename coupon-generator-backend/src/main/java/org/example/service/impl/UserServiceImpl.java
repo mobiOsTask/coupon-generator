@@ -58,12 +58,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResponse updateUser(UserDTO userDTO, int userId) {
-        UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-        UserEntity userEntityNew = userRepository.findById(userId).get();
+        UserEntity userEntity = userRepository.findById(userId).get();
 
-        userEntityNew.setUserName(userEntity.getUserName());
-        userEntityNew.setAddress(userEntity.getAddress());
-        userRepository.save(userEntityNew);
+        userEntity.setUserName(userDTO.getUserName());
+        userEntity.setAddress(userDTO.getAddress());
+        userRepository.save(userEntity);
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
