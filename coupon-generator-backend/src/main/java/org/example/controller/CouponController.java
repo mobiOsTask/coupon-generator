@@ -27,13 +27,13 @@ public class CouponController {
     CouponService service;
 
 
-    @PostMapping("/save-coupons")
+    @PostMapping("/")
     public ApiResponse createCoupon(@Valid @RequestBody DTO dto){
         return service.createCoupon(dto);
 
     }
 
-    @GetMapping("/get-coupons")
+    @GetMapping("/")
     public ApiResponse getCoupons(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
