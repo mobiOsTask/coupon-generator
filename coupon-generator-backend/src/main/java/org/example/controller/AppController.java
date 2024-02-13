@@ -14,12 +14,12 @@ public class AppController {
     @Autowired
     AppService appService;
 
-    @PostMapping("/create-app")
+    @PostMapping("/")
     public ApiResponse createApp(@RequestBody AppDTO appDTO){
         return appService.createApp(appDTO);
     }
 
-    @GetMapping("/get-apps")
+    @GetMapping("/")
     public ApiResponse getAllApps(){
         return appService.getAllApps();
     }

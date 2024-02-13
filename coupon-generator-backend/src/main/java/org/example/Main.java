@@ -2,18 +2,23 @@ package org.example;
 
 import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.TimeZone;
 
 
 @SpringBootApplication
 public class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         SpringApplication.run(Main.class);
+        logger.info("Main Class Executing");
     }
 
 

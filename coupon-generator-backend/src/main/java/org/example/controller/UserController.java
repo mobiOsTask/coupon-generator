@@ -14,12 +14,12 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/add-user")
+    @PostMapping("/")
     public ApiResponse addUser(@RequestBody UserDTO userDTO){
         return userService.addUser(userDTO);
     }
 
-    @GetMapping("/get-users")
+    @GetMapping("/")
     public ApiResponse getAllUsers(){
         return userService.getUsers();
     }
