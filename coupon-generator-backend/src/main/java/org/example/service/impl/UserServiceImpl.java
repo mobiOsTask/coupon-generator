@@ -2,7 +2,9 @@ package org.example.service.impl;
 
 import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
+import org.example.entity.CouponEntity;
 import org.example.entity.UserEntity;
+import org.example.repository.CouponRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.example.util.RequestStatus;
@@ -20,6 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CouponRepository couponRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -81,5 +86,9 @@ public class UserServiceImpl implements UserService {
         apiResponse.setMessage("User Updated Successfully");
         logger.info("User Updated {} " , userEntity.getUserId());
         return apiResponse;
+    }
+
+    public void saveCoupons(List<CouponEntity> data){
+
     }
 }

@@ -6,7 +6,7 @@ import org.example.dto.DTO;
 import org.springframework.data.domain.Pageable;
 
 public interface CouponService {
-    ApiResponse createCoupon(DTO dto);
+    void createCoupon(DTO dto);
 
     ApiResponse getCoupons(Pageable pageable);
 

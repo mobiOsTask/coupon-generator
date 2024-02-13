@@ -67,9 +67,10 @@ public class Utils {
     }
 
     public static boolean validateDTO(DTO dto) {
-        int totalCouponCount = dto.getLogic().stream()
-                .mapToInt(CouponDTO::getCount)
-                .sum();
+        int totalCouponCount = 0;
+        for(CouponDTO data : dto.getLogic()){
+            totalCouponCount += data.getCount();
+        }
 
         if (totalCouponCount != dto.getCouponCount() || dto.getCouponCount() < 0) {
             throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE,"Invalid Coupon Count");

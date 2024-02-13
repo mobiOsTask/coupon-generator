@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "coupon")
 public class CouponEntity extends Auditable{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int couponId;
     private int count;
     private String type;

@@ -1,15 +1,18 @@
 package org.example.controller;
 
 import jakarta.validation.Valid;
+
 import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.service.CouponService;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @CrossOrigin
@@ -28,9 +31,8 @@ public class CouponController {
 
 
     @PostMapping("/")
-    public ApiResponse createCoupon(@Valid @RequestBody DTO dto){
-        return service.createCoupon(dto);
-
+    public void createCoupon(@Valid @RequestBody DTO dto){
+        service.createCoupon(dto);
     }
 
     @GetMapping("/")

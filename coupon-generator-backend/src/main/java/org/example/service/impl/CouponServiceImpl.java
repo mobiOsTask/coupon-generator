@@ -15,6 +15,7 @@ import org.example.repository.AppRepository;
 import org.example.repository.CampaignRepository;
 import org.example.repository.CouponRepository;
 import org.example.repository.CouponUserRepository;
+import org.example.service.AppService;
 import org.example.service.CouponService;
 import org.example.util.Messages;
 import org.example.util.RequestStatus;
@@ -54,22 +55,15 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     Messages messages;
 
+    @Autowired
+    NativeCouponRepository nativeCouponRepository;
+
 
     @Override
-    public ApiResponse createCoupon(DTO dto) {
+    public void createCoupon(DTO dto) {
         processData(dto);
-        ApiResponse response = new ApiResponse();
-        response.setResponseCode(ResponseCodes.SUCCESS);
-        response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
-        response.setMessage("Coupons saved succesfully");
-        return response;
     }
 
-//    @Transactional
-//    public void saveCouponEntity(List<CouponEntity> couponEntityList) {
-//        couponRepository.saveAll(couponEntityList);
-//
-//    }
 
     @Transactional
     public void processData(DTO dto) {
@@ -91,16 +85,17 @@ public class CouponServiceImpl implements CouponService {
                     List<CouponEntity> coupons = couponNumbers.stream()
                             .map(couponNumber -> Utils.getCouponEntity(data, couponNumber, campaignEntity))
                             .collect(Collectors.toList());
-//                    all.add(coupons);
-                    couponRepository.saveAll(coupons); // saves created coupons
+                    all.add(coupons);
+
                 }
 
             });
         }
 
-//        for (List<CouponEntity> data : all) {
-//            saveCouponEntity(data);
-//        }
+        for (List<CouponEntity> data : all) {
+            System.out.println(Thread.currentThread().getName());
+            nativeCouponRepository.batchSaveCoupons(data);
+        }
     }
 
 

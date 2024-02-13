@@ -32,6 +32,7 @@ public abstract class Auditable {
     @Column(name = "created_by")
     private Long createdBy;
 
+    @JsonIgnore
     @CreatedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_datetime")
@@ -42,6 +43,7 @@ public abstract class Auditable {
     @Column(name = "modified_by")
     private Long modifiedBy;
 
+    @JsonIgnore
     @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "modified_datetime")

@@ -29,13 +29,7 @@ class CouponControllerTest {
 
 
 
-    @Test
-    void createCoupon() {
-        when(couponController.createCoupon(dto)).thenReturn(new ApiResponse());
-        ApiResponse apiResponse = couponController.createCoupon(dto);
 
-        assertNotNull(apiResponse);
-    }
 
     @Test
     void getCoupons() {
