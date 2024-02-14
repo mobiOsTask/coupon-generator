@@ -7,6 +7,7 @@ import org.example.entity.UserEntity;
 import org.example.repository.CouponRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.example.util.Messages;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    Messages messages;
+
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
@@ -40,7 +44,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("User Added Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_CREATED, null));
         logger.info("User Added {} " , userEntity.getUserId());
         return apiResponse;
     }
@@ -66,7 +70,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("User Deleted Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_DELETED, null));
         logger.info("User Deleted {} " , userId);
         return apiResponse;
     }
@@ -83,7 +87,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("User Updated Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_UPDATED, null));
         logger.info("User Updated {} " , userEntity.getUserId());
         return apiResponse;
     }

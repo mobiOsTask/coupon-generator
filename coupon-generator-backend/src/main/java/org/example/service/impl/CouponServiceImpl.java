@@ -112,11 +112,11 @@ public class CouponServiceImpl implements CouponService {
         if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1)) {
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-            apiResponse.setMessage("Coupon Can Use");
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CAN_USE, null));
         } else {
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
-            apiResponse.setMessage("Coupon Can't Use");
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CANNOT_USE, null));
         }
         logger.info("Check coupon ends");
         return apiResponse;
@@ -145,16 +145,16 @@ public class CouponServiceImpl implements CouponService {
                 couponUserRepository.save(couponUserEntity);
                 apiResponse.setResponseCode(ResponseCodes.SUCCESS);
                 apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
-                apiResponse.setMessage("Coupon Used Successfully");
+                apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USE_SUCCESS, null));
             } else {
                 apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
                 apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
-                apiResponse.setMessage("Coupon Failed to Apply because of User Not Found");
+                apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_NOT_FOUND, null));
             }
         } else {
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
             apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
-            apiResponse.setMessage("Coupon Failed to Apply");
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USE_FAILED, null));
         }
         logger.info("Coupon use ends");
         return apiResponse;

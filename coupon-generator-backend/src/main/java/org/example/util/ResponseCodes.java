@@ -30,4 +30,25 @@ public class ResponseCodes {
     public static final String ID_ALREADY_EXIST = "1012";
     public static final String INVALID_MODULE = "1013";
 
+    public static final String CAN_USE = "8002";
+
+    public static final String CANNOT_USE = "8003";
+
+    public static final String USE_SUCCESS = "8004";
+
+    public static final String USE_FAILED = "8005";
+
+    public static final String USER_NOT_FOUND = "8006";
+
+    public static final String APP_CREATED = "9000";
+
+    public static final String APP_UPDATED = "9001";
+
+    public static final String APP_DELETED = "9002";
+
+    public static final String USER_CREATED = "10000";
+
+    public static final String USER_UPDATED = "10001";
+
+    public static final String USER_DELETED = "10002";
 }

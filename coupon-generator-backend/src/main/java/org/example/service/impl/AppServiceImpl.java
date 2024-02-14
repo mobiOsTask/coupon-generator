@@ -5,6 +5,7 @@ import org.example.dto.AppDTO;
 import org.example.entity.AppEntity;
 import org.example.repository.AppRepository;
 import org.example.service.AppService;
+import org.example.util.Messages;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,9 @@ public class AppServiceImpl implements AppService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    Messages messages;
+
     private static final Logger logger = LoggerFactory.getLogger(AppServiceImpl.class);
 
 
@@ -37,7 +41,7 @@ public class AppServiceImpl implements AppService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("App Created Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_CREATED, null));
         logger.info("App Created {} ", appEntity.getAppId());
         return apiResponse;
     }
@@ -49,7 +53,7 @@ public class AppServiceImpl implements AppService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("App Deleted Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_DELETED, null));
         logger.info("App Deleted {} ", appId);
         return apiResponse;
     }
@@ -81,7 +85,7 @@ public class AppServiceImpl implements AppService {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage("App Updated Successfully");
+        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_UPDATED, null));
         logger.info("App Updated {} ", appEntity.getAppId());
         return apiResponse;
     }
