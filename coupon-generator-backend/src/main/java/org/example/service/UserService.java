@@ -9,6 +9,7 @@ import java.util.List;
 public interface UserService {
     ApiResponse addUser(UserDTO userDTO);
     ApiResponse getUsers();
+    ApiResponse getUserById(int userId);
     ApiResponse deleteUser(int userId);
     ApiResponse updateUser(UserDTO userDTO, int userId);
 }

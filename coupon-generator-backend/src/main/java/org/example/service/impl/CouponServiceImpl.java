@@ -149,7 +149,7 @@ public class CouponServiceImpl implements CouponService {
             } else {
                 apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
                 apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
-                apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_NOT_FOUND, null));
+                apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USE_FAILED_USER_NOT_FOUND, null));
             }
         } else {
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);

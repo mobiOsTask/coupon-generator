@@ -24,6 +24,11 @@ public class UserController {
         return userService.getUsers();
     }
 
+    @GetMapping("/{userId}")
+    public ApiResponse getUserById(@PathVariable int userId){
+        return userService.getUserById(userId);
+    }
+
     @DeleteMapping("/delete-user/{userId}")
     public ApiResponse deleteUser(@PathVariable int userId){
         return userService.deleteUser(userId);

@@ -24,6 +24,11 @@ public class AppController {
         return appService.getAllApps();
     }
 
+    @GetMapping("/{appId}")
+    public ApiResponse getAppById(@PathVariable int appId){
+        return appService.getAppById(appId);
+    }
+
     @PutMapping("/update-app/{appId}")
     public ApiResponse updateApp(@RequestBody AppDTO appDTO, @PathVariable int appId){
         return appService.updateApp(appDTO, appId);

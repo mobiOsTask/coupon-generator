@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AppServiceImpl implements AppService {
@@ -48,13 +49,22 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public ApiResponse deleteApp(int appId) {
-        logger.info("Delete App Starts");
-        appRepository.deleteById(appId);
+        logger.info("Delete App starts");
+        Optional<AppEntity> appEntityOptional = appRepository.findById(appId);
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
-        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_DELETED, null));
-        logger.info("App Deleted {} ", appId);
+
+        if(appEntityOptional.isPresent()){
+            appRepository.deleteById(appId);
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+            apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_DELETED, null));
+            logger.info("App Deleted {} ", appId);
+        }else{
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+            apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_NOT_FOUND, null));
+        }
+        logger.info("Delete App ends");
         return apiResponse;
     }
 
@@ -72,21 +82,46 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public ApiResponse updateApp(AppDTO appDTO, int appId) {
-        logger.info("Update App Starts");
-        AppEntity appEntity = appRepository.findById(appId).get();
-
-        appEntity.setAppName(appDTO.getAppName());
-        appEntity.setWebSiteURL(appDTO.getWebSiteURL());
-        appEntity.setContactNumber(appDTO.getContactNumber());
-
-        appRepository.save(appEntity);
-
+    public ApiResponse getAppById(int appId) {
+        logger.info("GetById starts");
+        Optional<AppEntity> appEntity = appRepository.findById(appId);
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
-        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_UPDATED, null));
-        logger.info("App Updated {} ", appEntity.getAppId());
+
+        if(appEntity.isPresent()){
+            apiResponse.setAppEntity(appEntity.get());
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+            apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+        }else{
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+            apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_NOT_FOUND, null));
+        }
+        logger.info("GetById ends");
+        return apiResponse;
+    }
+
+    @Override
+    public ApiResponse updateApp(AppDTO appDTO, int appId) {
+        logger.info("Update App starts");
+        Optional<AppEntity> appEntityOptional = appRepository.findById(appId);
+        ApiResponse apiResponse = new ApiResponse();
+        if(appEntityOptional.isPresent()){
+            AppEntity appEntity = appEntityOptional.get();
+            appEntity.setAppName(appDTO.getAppName());
+            appEntity.setWebSiteURL(appDTO.getWebSiteURL());
+            appEntity.setContactNumber(appDTO.getContactNumber());
+            appRepository.save(appEntity);
+
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+            apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_UPDATED, null));
+            logger.info("App Updated {} ", appEntity.getAppId());
+        }else{
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+            apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_NOT_FOUND, null));
+        }
+        logger.info("Update App ends");
         return apiResponse;
     }
 }

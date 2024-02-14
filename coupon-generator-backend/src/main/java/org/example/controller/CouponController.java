@@ -6,7 +6,6 @@ import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.service.CouponService;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
