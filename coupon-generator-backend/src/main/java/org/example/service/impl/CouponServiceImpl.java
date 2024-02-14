@@ -15,13 +15,14 @@ import org.example.repository.AppRepository;
 import org.example.repository.CampaignRepository;
 import org.example.repository.CouponRepository;
 import org.example.repository.CouponUserRepository;
-import org.example.service.AppService;
 import org.example.service.CouponService;
 import org.example.util.Messages;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
 import org.example.util.Utils;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,15 +59,18 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     NativeCouponRepository nativeCouponRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
 
     @Override
     public void createCoupon(DTO dto) {
+        logger.info("Create coupon starts");
         processData(dto);
+        logger.info("Create coupon ends");
     }
-
 
     @Transactional
     public void processData(DTO dto) {
+        logger.info("Process data starts");
         List<List<CouponEntity>> all = new ArrayList<>();
         if (Utils.validateDTO(dto)) { // validates coupon count, start date and end date
 
@@ -86,9 +90,7 @@ public class CouponServiceImpl implements CouponService {
                             .map(couponNumber -> Utils.getCouponEntity(data, couponNumber, campaignEntity))
                             .collect(Collectors.toList());
                     all.add(coupons);
-
                 }
-
             });
         }
 
@@ -96,11 +98,13 @@ public class CouponServiceImpl implements CouponService {
             System.out.println(Thread.currentThread().getName());
             nativeCouponRepository.batchSaveCoupons(data);
         }
+        logger.info("Process data ends");
     }
 
 
     @Override
     public ApiResponse checkCoupon(String number) {
+        logger.info("Check coupon starts {} ", number);
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
         ApiResponse apiResponse = new ApiResponse();
 
@@ -114,13 +118,14 @@ public class CouponServiceImpl implements CouponService {
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setMessage("Coupon Can't Use");
         }
+        logger.info("Check coupon ends");
         return apiResponse;
     }
 
     @Transactional
     @Override
     public ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number) {
-
+        logger.info("Coupon use starts {} ", couponUserDTO.getUsedCouponId());
         ApiResponse apiResponse = new ApiResponse();
 
         // change coupon status
@@ -151,15 +156,18 @@ public class CouponServiceImpl implements CouponService {
             apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
             apiResponse.setMessage("Coupon Failed to Apply");
         }
+        logger.info("Coupon use ends");
         return apiResponse;
     }
 
     @Override
     public void changeCouponUsageCount(String number) {
+        logger.info("Change coupon usage count starts");
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
         int couponUsageCount = couponEntity.getUsageCount();
         couponUsageCount--;
         couponRepository.updateCouponUsageCount(couponUsageCount, number);
+        logger.info("Coupon usage count ends");
     }
 
 
@@ -171,7 +179,6 @@ public class CouponServiceImpl implements CouponService {
         response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
         response.setResponseCode(ResponseCodes.SUCCESS);
         return response;
-
     }
 
 

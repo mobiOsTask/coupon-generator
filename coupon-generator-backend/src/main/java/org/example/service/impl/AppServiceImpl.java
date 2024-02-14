@@ -1,12 +1,9 @@
 package org.example.service.impl;
 
-import jakarta.transaction.Transactional;
 import org.example.dto.ApiResponse;
 import org.example.dto.AppDTO;
 import org.example.entity.AppEntity;
-import org.example.entity.CouponEntity;
 import org.example.repository.AppRepository;
-import org.example.repository.CouponRepository;
 import org.example.service.AppService;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
@@ -14,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
