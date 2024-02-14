@@ -2,6 +2,7 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 
+import org.example.dto.ApiRequest;
 import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 
 @RestController
@@ -34,12 +38,11 @@ public class CouponController {
         service.createCoupon(dto);
     }
 
-    @GetMapping("/")
-    public ApiResponse getCoupons(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return service.getCoupons(pageable);
+    @PostMapping("/manage")
+    public ApiResponse getCoupons(@RequestBody ApiRequest apiRequest) {
+
+        System.out.println(apiRequest);
+        return service.getCoupons(apiRequest);
     }
 
     @GetMapping("/check-coupon")

@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
@@ -24,5 +26,17 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     @Query("UPDATE CouponEntity c SET c.usageCount = :couponUsageCount WHERE c.number = :number")
     void updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
 
-    Page<CouponEntity> findAll(Pageable pageable);
+    @Query("select distinct u from CouponEntity u " +
+            " where (:fromDate is null or u.createdDatetime  >= :fromDate) " +
+            " and (:toDate is null or u.createdDatetime <= :toDate)" +
+            " and (:searchEnabled is null " +
+            " or (u.number like concat(concat('%',:val),'%')))")
+    Page<CouponEntity> getAll(
+            @Param("val") String val,
+            @Param("searchEnabled") String searchEnabled,
+            @Param("fromDate") Date fromDate,
+            @Param("toDate") Date toDate,
+            Pageable pageable);
+
+
 }

@@ -8,6 +8,11 @@ public class ResponseCodes {
 
     public static final String SUCCESS = "200";
 
+    public static final String INVALID_DATE = "6000";
+    public static final String INVALID_COUNT = "6002";
+    public static final String INVALID_TYPE = "6001";
+    public static final String INVALID_DISPLAY_VALUE = "6003";
+
     public static final String UNPROCESSABLE_ENTITY = "422";
     public static final String FAILED = "-1";
 

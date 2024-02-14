@@ -15,15 +15,29 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiRequest {
 
+    //filtering conditions
     String type;
+    String displayValue;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    Date dateFrom;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    Date dateTo;
+    double minAmount;
+    double maxAmount;
+    boolean isValid;
+    int campaign_id;
+    private Integer page;
+    private Integer pageCount;
+    private String searchValue;
+
     String refNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date date;
     String note;
     String isActive;
 
-    Date dateFrom;
-    Date dateTo;
+
+
     String status;
     String description;
     Long id;
@@ -56,11 +70,9 @@ public class ApiRequest {
     private Long userId;
     private Long deliveryDataFileId;
 
-    private String searchValue;
+
     private Boolean sendSMS;
     private String content;
 
-    private Integer page;
-    private Integer pageCount;
 
 }

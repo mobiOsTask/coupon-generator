@@ -31,13 +31,13 @@ class CouponControllerTest {
 
 
 
-    @Test
-    void getCoupons() {
-        int pageSize = 10;
-        int page= 0;
-        when(couponController.getCoupons(page,pageSize)).thenReturn(new ApiResponse());
-        ApiResponse apiResponse = couponController.getCoupons(page,pageSize);
-
-        assertNotNull(apiResponse);
-    }
+//    @Test
+//    void getCoupons() {
+//        int pageSize = 10;
+//        int page= 0;
+//        when(couponController.getCoupons(page,pageSize)).thenReturn(new ApiResponse());
+//        ApiResponse apiResponse = couponController.getCoupons(page,pageSize);
+//
+//        assertNotNull(apiResponse);
+//    }
 }

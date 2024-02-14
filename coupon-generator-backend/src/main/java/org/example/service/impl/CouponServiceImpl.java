@@ -1,6 +1,7 @@
 package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
+import org.example.dto.ApiRequest;
 import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
@@ -16,6 +17,7 @@ import org.example.repository.CampaignRepository;
 import org.example.repository.CouponRepository;
 import org.example.repository.CouponUserRepository;
 import org.example.service.CouponService;
+import org.example.service.CouponStorageService;
 import org.example.util.Messages;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +41,6 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     CouponRepository couponRepository;
 
-    @Autowired
-    CampaignRepository campaignRepository;
 
     @Autowired
     AppRepository appRepository;
@@ -56,8 +57,9 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     Messages messages;
 
+
     @Autowired
-    NativeCouponRepository nativeCouponRepository;
+    CouponStorageService couponStorageService;
 
     private static final Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
 
@@ -68,7 +70,6 @@ public class CouponServiceImpl implements CouponService {
         logger.info("Create coupon ends");
     }
 
-    @Transactional
     public void processData(DTO dto) {
         logger.info("Process data starts");
         List<List<CouponEntity>> all = new ArrayList<>();
@@ -80,7 +81,7 @@ public class CouponServiceImpl implements CouponService {
             }
 
             CampaignEntity campaignEntity = Utils.createCampaignEntity(dto, appEntity);
-            campaignRepository.save(campaignEntity); // saves campaign entity
+            couponStorageService.saveCampaign(campaignEntity); // saves campaign entity
 
             dto.getLogic().parallelStream().forEach(data -> { //creates a parallel stream to implement parallel processing ,iterate through the dto's logic array
                 System.out.println("Thread: " + Thread.currentThread().getName()); // prints the currently using thread
@@ -96,7 +97,7 @@ public class CouponServiceImpl implements CouponService {
 
         for (List<CouponEntity> data : all) {
             System.out.println(Thread.currentThread().getName());
-            nativeCouponRepository.batchSaveCoupons(data);
+            couponStorageService.saveCoupons(data);
         }
         logger.info("Process data ends");
     }
@@ -172,14 +173,42 @@ public class CouponServiceImpl implements CouponService {
 
 
     @Override
-    public ApiResponse getCoupons(Pageable pageable) {
-        Page<CouponEntity> all = couponRepository.findAll(pageable);
+    public ApiResponse getCoupons(ApiRequest apiRequest) {
+
+        PageRequest pageRequest = PageRequest.of(apiRequest.getPage(), apiRequest.getPageCount());
+        double minAmount = apiRequest.getMinAmount();
+        double maxAmount = apiRequest.getMaxAmount();
+        Date dateFrom = apiRequest.getDateFrom();
+        Date dateTo = apiRequest.getDateTo();
+        String type = apiRequest.getType();;
+        String displayValue = apiRequest.getDisplayValue();
+
+        if (dateFrom != null) {
+            String date = Utils.formatDateOnly(dateFrom);
+            dateFrom = Utils.formatDateAndTime(date + " 00:00:00");
+            System.out.println(dateFrom);
+        }
+        if (dateTo != null) {
+            String date = Utils.formatDateOnly(dateTo);
+            dateTo = Utils.formatDateAndTime(date + " 23:59:59");
+            System.out.println(dateTo);
+        }
+
+        String isSearch = null;
+        if (null != apiRequest.getSearchValue()) {
+            isSearch = "true";
+        }
+        System.out.println(dateFrom);
+        System.out.println(dateTo);
+        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo,pageRequest);
+
         ApiResponse response = new ApiResponse();
         response.setCouponList(all);
         response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
         response.setResponseCode(ResponseCodes.SUCCESS);
         return response;
     }
+
 
 
 }
