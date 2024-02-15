@@ -39,6 +39,7 @@ public abstract class Auditable {
     @Column(name = "created_datetime")
     private LocalDateTime createdDatetime;
 
+
     @JsonIgnore
     @LastModifiedBy
     @Column(name = "modified_by")

@@ -49,6 +49,9 @@ public class CouponServiceImpl implements CouponService {
     CouponUserRepository couponUserRepository;
 
     @Autowired
+    LogicRepository logicRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -80,20 +83,20 @@ public class CouponServiceImpl implements CouponService {
                 throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "Invalid App ID"); // validate App Id
             }
 
-//            for (CouponDTO couponDTO : dto.getLogic()){
-//                couponDTO.get
-//            }
 
             CampaignEntity campaignEntity = Utils.createCampaignEntity(dto, appEntity);
             couponStorageService.saveCampaign(campaignEntity); // saves campaign entity
 
             dto.getLogic().parallelStream().forEach(data -> { //creates a parallel stream to implement parallel processing ,iterate through the dto's logic array
                 System.out.println("Thread: " + Thread.currentThread().getName()); // prints the currently using thread
-                if (Utils.validateCouponDTO(data)) { // validate coupon dto's type and display value
-                    Set<String> couponNumbers = Utils.validateCouponNumber(data);  // create unique coupon numbers and validate them
+                if (Utils.validateCouponDTO(data,dto.getStartDate(),dto.getEndDate())) { // validate coupon dto's type and display value
+                    LogicEntity logicEntity = Utils.getLogicEntity(data,campaignEntity);
+                    logicRepository.save(logicEntity);
+                    Set<String> couponNumbers = Utils.validateCouponNumber(data);
                     List<CouponEntity> coupons = couponNumbers.stream()
-                            .map(couponNumber -> Utils.getCouponEntity(data, couponNumber, campaignEntity))
+                            .map(couponNumber -> Utils.getCouponEntity(couponNumber, logicEntity))
                             .collect(Collectors.toList());
+                    System.out.println(coupons);
                     all.add(coupons);
                 }
             });
@@ -190,7 +193,7 @@ public class CouponServiceImpl implements CouponService {
         double maxAmount = apiRequest.getMaxAmount();
         LocalDateTime dateFrom = apiRequest.getDateFrom();
         LocalDateTime dateTo = apiRequest.getDateTo();
-        String type = apiRequest.getType();;
+        String type = apiRequest.getType();
         String displayValue = apiRequest.getDisplayValue();
 
 
@@ -211,7 +214,7 @@ public class CouponServiceImpl implements CouponService {
         if (null != apiRequest.getSearchValue()) {
             isSearch = "true";
         }
-        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo,minAmount,maxAmount,type,displayValue,pageRequest);
+        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo, minAmount, maxAmount, type, displayValue, pageRequest);
 
         ApiResponse response = new ApiResponse();
         response.setCouponList(all);
