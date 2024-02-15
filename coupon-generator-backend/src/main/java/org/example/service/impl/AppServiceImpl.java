@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.example.dto.ApiResponse;
 import org.example.dto.AppDTO;
 import org.example.entity.AppEntity;
@@ -47,6 +48,7 @@ public class AppServiceImpl implements AppService {
         return apiResponse;
     }
 
+    @Transactional
     @Override
     public ApiResponse deleteApp(int appId) {
         logger.info("Delete App starts");
@@ -54,7 +56,7 @@ public class AppServiceImpl implements AppService {
         ApiResponse apiResponse = new ApiResponse();
 
         if(appEntityOptional.isPresent()){
-            appRepository.deleteById(appId);
+            appRepository.deleteAppEntityByAppId(appId);
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.APP_DELETED, null));
@@ -71,7 +73,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public ApiResponse getAllApps() {
         logger.info("Get Apps Starts");
-        List<AppEntity> appEntities = appRepository.findAll();
+        List<AppEntity> appEntities = appRepository.findNonDeletedEntities();
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setAppList(appEntities);
@@ -88,9 +90,10 @@ public class AppServiceImpl implements AppService {
         ApiResponse apiResponse = new ApiResponse();
 
         if(appEntity.isPresent()){
-            apiResponse.setAppEntity(appEntity.get());
+            apiResponse.setAppEntity(appEntity.get().isDeleted() ? null : appEntity.get());
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(appEntity.get().isDeleted() ? ResponseCodes.APP_HAS_DELETED : ResponseCodes.APP_FOUND, null));
         }else{
             apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
             apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());

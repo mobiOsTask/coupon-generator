@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.entity.CouponEntity;
@@ -53,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiResponse getUsers() {
         logger.info("Get Users starts");
-        List<UserEntity> userEntities = userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findNonDeletedEntities();
 
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setUserList(userEntities);
@@ -72,9 +73,10 @@ public class UserServiceImpl implements UserService {
         ApiResponse apiResponse = new ApiResponse();
         if(optionalUserEntity.isPresent()){
             UserEntity userEntity = optionalUserEntity.get();
-            apiResponse.setUserEntity(userEntity);
+            apiResponse.setUserEntity(userEntity.isDeleted() ? null : userEntity);
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(userEntity.isDeleted() ? ResponseCodes.USER_HAS_DELETED : ResponseCodes.USER_FOUND, null));
         }else {
             apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
             apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());
@@ -84,6 +86,7 @@ public class UserServiceImpl implements UserService {
         return apiResponse;
     }
 
+    @Transactional
     @Override
     public ApiResponse deleteUser(int userId) {
         logger.info("Delete User starts");
@@ -91,7 +94,7 @@ public class UserServiceImpl implements UserService {
         ApiResponse apiResponse = new ApiResponse();
 
         if(optionalUserEntity.isPresent()){
-            userRepository.deleteById(userId);
+            userRepository.deleteAppEntityByUserId(userId);
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_DELETED, null));
