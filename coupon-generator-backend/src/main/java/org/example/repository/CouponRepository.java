@@ -20,21 +20,21 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     CouponEntity getCouponEntityByNumber(@Param("number") String number);
 
     @Modifying
-    @Query("UPDATE CouponEntity c SET c.isValid = false WHERE c.number = :number")
+    @Query("UPDATE CouponEntity c SET c.isRedeemable = false WHERE c.number = :number")
     void updateCouponValidity(@Param("number") String number);
 
     @Modifying
-    @Query("UPDATE CouponEntity c SET c.usageCount = :couponUsageCount WHERE c.number = :number")
+    @Query("UPDATE CouponEntity c SET c.logicEntity.usageCount = :couponUsageCount WHERE c.number = :number")
     void updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
 
     @Query("select distinct u from CouponEntity u " +
             " where (:fromDate is null or u.createdDatetime >= :fromDate) " +
             " and (:toDate is null or u.createdDatetime <= :toDate)" +
             " and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
-            " or (:minAmount is null or u.amount >= :minAmount)" +
-            " and (:maxAmount is null or u.amount <= :maxAmount)" +
-            " or (:type is null or u.type = :type)" +
-            " and (:displayValue is null or u.displayValue = :displayValue)")
+            " or (:minAmount is null or u.logicEntity.amount >= :minAmount)" +
+            " and (:maxAmount is null or u.logicEntity.amount <= :maxAmount)" +
+            " or (:type is null or u.logicEntity.type = :type)" +
+            " and (:displayValue is null or u.logicEntity.displayValue = :displayValue)")
     Page<CouponEntity> getAll(
             @Param("val") String val,
             @Param("searchEnabled") String searchEnabled,

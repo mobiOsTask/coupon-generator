@@ -18,5 +18,5 @@ public class DTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private int couponCount;
-    private List<CouponDTO> logic;
+    private List<LogicDTO> logic;
 }

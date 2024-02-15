@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,30 +15,19 @@ public class CouponEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int couponId;
-    private int count;
-    private String type;
-    private String displayValue;
-    @JsonIgnore
-    private int length;
-    @JsonIgnore
-    private String regex;
-    private int usageCount;
-    private double amount;
     private String number;
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean isValid;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private boolean isRedeemable;
 
-    public void setIsValid(boolean isValid){
-        this.isValid = isValid;
+    public void setIsRedeemable(boolean isValid){
+        this.isRedeemable = isValid;
     }
-    public boolean getIsValid(){
-        return isValid;
+    public boolean getIsRedeemable(){
+        return isRedeemable;
     }
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "campaign_id")
-    private CampaignEntity campaignEntity;
+    @JoinColumn(name = "logic_id")
+    private LogicEntity logicEntity ;
 }

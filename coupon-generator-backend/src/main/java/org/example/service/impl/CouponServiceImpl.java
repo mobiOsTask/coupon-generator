@@ -13,7 +13,6 @@ import org.example.entity.CouponEntity;
 import org.example.entity.CouponUserEntity;
 import org.example.exception.DLAppValidationsException;
 import org.example.repository.AppRepository;
-import org.example.repository.CampaignRepository;
 import org.example.repository.CouponRepository;
 import org.example.repository.CouponUserRepository;
 import org.example.service.CouponService;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -116,7 +114,7 @@ public class CouponServiceImpl implements CouponService {
         ApiResponse apiResponse = new ApiResponse();
 
         // check the coupon can use or not
-        if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1) && isValidDate(couponEntity)) {
+        if ((couponEntity != null) && (couponEntity.getLogicEntity().getUsageCount() == 0 || (couponEntity.getLogicEntity().getUsageCount() == 1 && couponEntity.getIsRedeemable()) || couponEntity.getLogicEntity().getUsageCount() > 1) && isValidDate(couponEntity)) {
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CAN_USE, null));
@@ -143,10 +141,10 @@ public class CouponServiceImpl implements CouponService {
 
             if (userEntity.isPresent()) {
                 // change isValid if usage count == 1
-                if (couponEntity.getUsageCount() == 1) {
+                if (couponEntity.getLogicEntity().getUsageCount() == 1) {
                     couponRepository.updateCouponValidity(number);
                     // change coupon usage
-                } else if (couponEntity.getUsageCount() > 1) {
+                } else if (couponEntity.getLogicEntity().getUsageCount() > 1) {
                     changeCouponUsageCount(number);
                 }
                 couponUserRepository.save(couponUserEntity);
@@ -171,7 +169,7 @@ public class CouponServiceImpl implements CouponService {
     public void changeCouponUsageCount(String number) {
         logger.info("Change coupon usage count starts");
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
-        int couponUsageCount = couponEntity.getUsageCount();
+        int couponUsageCount = couponEntity.getLogicEntity().getUsageCount();
         couponUsageCount--;
         couponRepository.updateCouponUsageCount(couponUsageCount, number);
         logger.info("Coupon usage count ends");
@@ -180,7 +178,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public boolean isValidDate(CouponEntity couponEntity) {
         LocalDate currentDate = LocalDate.now();
-        return couponEntity.getStartDate().isBefore(currentDate) && couponEntity.getEndDate().isAfter(currentDate);
+        return couponEntity.getLogicEntity().getStartDate().isBefore(currentDate) && couponEntity.getLogicEntity().getEndDate().isAfter(currentDate);
     }
 
 
