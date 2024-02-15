@@ -44,6 +44,8 @@ public class Utils {
         couponEntity.setLength(data.getLength());
         couponEntity.setRegex(data.getRegex());
         couponEntity.setNumber(couponNumber);
+        couponEntity.setStartDate(data.getStartDate());
+        couponEntity.setEndDate(data.getEndDate());
         return couponEntity;
     }
 

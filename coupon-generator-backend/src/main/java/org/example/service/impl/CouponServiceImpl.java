@@ -1,7 +1,10 @@
 package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.dto.*;
+import org.example.dto.ApiRequest;
+import org.example.dto.ApiResponse;
+import org.example.dto.CouponUserDTO;
+import org.example.dto.DTO;
 import org.example.entity.*;
 import org.example.repository.*;
 import org.example.entity.AppEntity;
@@ -29,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,6 +90,7 @@ public class CouponServiceImpl implements CouponService {
             couponStorageService.saveCampaign(campaignEntity); // saves campaign entity
 
             dto.getLogic().parallelStream().forEach(data -> { //creates a parallel stream to implement parallel processing ,iterate through the dto's logic array
+                System.out.println("Thread: " + Thread.currentThread().getName()); // prints the currently using thread
                 if (Utils.validateCouponDTO(data)) { // validate coupon dto's type and display value
                     Set<String> couponNumbers = Utils.validateCouponNumber(data);  // create unique coupon numbers and validate them
                     List<CouponEntity> coupons = couponNumbers.stream()
@@ -111,7 +116,7 @@ public class CouponServiceImpl implements CouponService {
         ApiResponse apiResponse = new ApiResponse();
 
         // check the coupon can use or not
-        if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1)) {
+        if ((couponEntity != null) && (couponEntity.getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsValid()) || couponEntity.getUsageCount() > 1) && isValidDate(couponEntity)) {
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CAN_USE, null));
@@ -170,6 +175,12 @@ public class CouponServiceImpl implements CouponService {
         couponUsageCount--;
         couponRepository.updateCouponUsageCount(couponUsageCount, number);
         logger.info("Coupon usage count ends");
+    }
+
+    @Override
+    public boolean isValidDate(CouponEntity couponEntity) {
+        LocalDate currentDate = LocalDate.now();
+        return couponEntity.getStartDate().isBefore(currentDate) && couponEntity.getEndDate().isAfter(currentDate);
     }
 
 

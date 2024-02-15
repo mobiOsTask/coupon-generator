@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +29,8 @@ public class CouponEntity extends Auditable{
     private String number;
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isValid;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public void setIsValid(boolean isValid){
         this.isValid = isValid;
