@@ -1,10 +1,7 @@
 package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.dto.ApiRequest;
-import org.example.dto.ApiResponse;
-import org.example.dto.CouponUserDTO;
-import org.example.dto.DTO;
+import org.example.dto.*;
 import org.example.entity.*;
 import org.example.repository.*;
 import org.example.entity.AppEntity;
@@ -81,11 +78,14 @@ public class CouponServiceImpl implements CouponService {
                 throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "Invalid App ID"); // validate App Id
             }
 
+//            for (CouponDTO couponDTO : dto.getLogic()){
+//                couponDTO.get
+//            }
+
             CampaignEntity campaignEntity = Utils.createCampaignEntity(dto, appEntity);
             couponStorageService.saveCampaign(campaignEntity); // saves campaign entity
 
             dto.getLogic().parallelStream().forEach(data -> { //creates a parallel stream to implement parallel processing ,iterate through the dto's logic array
-                System.out.println("Thread: " + Thread.currentThread().getName()); // prints the currently using thread
                 if (Utils.validateCouponDTO(data)) { // validate coupon dto's type and display value
                     Set<String> couponNumbers = Utils.validateCouponNumber(data);  // create unique coupon numbers and validate them
                     List<CouponEntity> coupons = couponNumbers.stream()

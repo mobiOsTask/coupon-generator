@@ -31,9 +31,9 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             " where (:fromDate is null or u.createdDatetime >= :fromDate) " +
             " and (:toDate is null or u.createdDatetime <= :toDate)" +
             " and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
-            " and (:minAmount is null or u.amount >= :minAmount)" +
+            " or (:minAmount is null or u.amount >= :minAmount)" +
             " and (:maxAmount is null or u.amount <= :maxAmount)" +
-            " and (:type is null or u.type = :type)" +
+            " or (:type is null or u.type = :type)" +
             " and (:displayValue is null or u.displayValue = :displayValue)")
     Page<CouponEntity> getAll(
             @Param("val") String val,
