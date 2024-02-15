@@ -53,6 +53,10 @@ public class ResponseCodes {
 
     public static final String APP_NOT_FOUND = "9003";
 
+    public static final String APP_HAS_DELETED = "9004";
+
+    public static final String APP_FOUND = "9005";
+
     public static final String USER_CREATED = "10000";
 
     public static final String USER_UPDATED = "10001";
@@ -60,4 +64,8 @@ public class ResponseCodes {
     public static final String USER_DELETED = "10002";
 
     public static final String USER_NOT_FOUND = "10003";
+
+    public static final String USER_HAS_DELETED = "10004";
+
+    public static final String USER_FOUND = "10005";
 }

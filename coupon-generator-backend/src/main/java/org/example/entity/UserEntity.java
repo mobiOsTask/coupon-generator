@@ -16,4 +16,5 @@ public class UserEntity {
     private int userId;
     private String userName;
     private String address;
+    private boolean isDeleted;
 }

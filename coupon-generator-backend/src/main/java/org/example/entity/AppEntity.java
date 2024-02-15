@@ -17,4 +17,5 @@ public class AppEntity {
     private String appName;
     private String webSiteURL;
     private String contactNumber;
+    private boolean isDeleted;
 }
