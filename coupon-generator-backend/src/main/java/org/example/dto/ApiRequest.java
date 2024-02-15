@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -19,9 +20,9 @@ public class ApiRequest {
     String type;
     String displayValue;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    Date dateFrom;
+    LocalDateTime dateFrom;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    Date dateTo;
+    LocalDateTime dateTo;
     double minAmount;
     double maxAmount;
     boolean isValid;

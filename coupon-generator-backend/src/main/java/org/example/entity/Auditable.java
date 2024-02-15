@@ -13,6 +13,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -36,7 +37,7 @@ public abstract class Auditable {
     @CreatedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_datetime")
-    private Date createdDatetime;
+    private LocalDateTime createdDatetime;
 
     @JsonIgnore
     @LastModifiedBy
@@ -47,7 +48,7 @@ public abstract class Auditable {
     @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "modified_datetime")
-    private Date modifiedDatetime;
+    private LocalDateTime modifiedDatetime;
 
     @JsonIgnore
     @Version
@@ -56,12 +57,12 @@ public abstract class Auditable {
 
     @PrePersist
     public void onCreate() {
-        this.createdDatetime = java.sql.Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE)));
-        this.modifiedDatetime = java.sql.Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE)));
+        this.createdDatetime = Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE))).toLocalDateTime();
+        this.modifiedDatetime = Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE))).toLocalDateTime();
     }
 
     @PreUpdate
     public void onUpdate() {
-        this.modifiedDatetime = java.sql.Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE)));
+        this.modifiedDatetime = Timestamp.valueOf(LocalDateTime.now(ZoneId.of(CouponController.TIME_ZONE))).toLocalDateTime();
     }
 }

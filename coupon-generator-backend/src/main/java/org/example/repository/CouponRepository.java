@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -27,16 +28,26 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     void updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
 
     @Query("select distinct u from CouponEntity u " +
-            " where (:fromDate is null or u.createdDatetime  >= :fromDate) " +
+            " where (:fromDate is null or u.createdDatetime >= :fromDate) " +
             " and (:toDate is null or u.createdDatetime <= :toDate)" +
-            " and (:searchEnabled is null " +
-            " or (u.number like concat(concat('%',:val),'%')))")
+            " and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
+            " and (:minAmount is null or u.amount >= :minAmount)" +
+            " and (:maxAmount is null or u.amount <= :maxAmount)" +
+            " and (:type is null or u.type = :type)" +
+            " and (:displayValue is null or u.displayValue = :displayValue)")
     Page<CouponEntity> getAll(
             @Param("val") String val,
             @Param("searchEnabled") String searchEnabled,
-            @Param("fromDate") Date fromDate,
-            @Param("toDate") Date toDate,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate,
+            @Param("minAmount") Double minAmount,
+            @Param("maxAmount") Double maxAmount,
+            @Param("type") String type,
+            @Param("displayValue") String displayValue,
             Pageable pageable);
+
+
+
 
 
 }

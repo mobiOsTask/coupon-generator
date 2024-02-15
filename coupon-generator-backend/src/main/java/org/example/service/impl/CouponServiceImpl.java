@@ -32,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -178,29 +179,30 @@ public class CouponServiceImpl implements CouponService {
         PageRequest pageRequest = PageRequest.of(apiRequest.getPage(), apiRequest.getPageCount());
         double minAmount = apiRequest.getMinAmount();
         double maxAmount = apiRequest.getMaxAmount();
-        Date dateFrom = apiRequest.getDateFrom();
-        Date dateTo = apiRequest.getDateTo();
+        LocalDateTime dateFrom = apiRequest.getDateFrom();
+        LocalDateTime dateTo = apiRequest.getDateTo();
         String type = apiRequest.getType();;
         String displayValue = apiRequest.getDisplayValue();
 
+
         if (dateFrom != null) {
-            String date = Utils.formatDateOnly(dateFrom);
-            dateFrom = Utils.formatDateAndTime(date + " 00:00:00");
-            System.out.println(dateFrom);
+//            String date = Utils.formatDateOnly(dateFrom);
+//            System.out.println(date);
+//            dateFrom = Utils.formatDateAndTime(date + " 00:00:00");
+//            System.out.println(dateFrom);
         }
         if (dateTo != null) {
-            String date = Utils.formatDateOnly(dateTo);
-            dateTo = Utils.formatDateAndTime(date + " 23:59:59");
-            System.out.println(dateTo);
+//            String date = Utils.formatDateOnly(dateTo);
+//            System.out.println(date);
+//            dateTo = Utils.parseDateAndTime(date + " 23:59:59");
+//            System.out.println(dateTo);
         }
 
         String isSearch = null;
         if (null != apiRequest.getSearchValue()) {
             isSearch = "true";
         }
-        System.out.println(dateFrom);
-        System.out.println(dateTo);
-        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo,pageRequest);
+        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo,minAmount,maxAmount,type,displayValue,pageRequest);
 
         ApiResponse response = new ApiResponse();
         response.setCouponList(all);

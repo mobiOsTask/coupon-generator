@@ -160,7 +160,6 @@ public class Utils {
     public static Date formatDateAndTime(String date) {
         Date parse = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         try {
             parse = simpleDateFormat.parse(date);
         } catch (ParseException e) {
@@ -168,4 +167,15 @@ public class Utils {
         }
         return parse;
     }
+    public static Date parseDateAndTime(String dateTime) {
+        Date parsedDate = null;
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            parsedDate = inputFormat.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return parsedDate;
+    }
+
 }

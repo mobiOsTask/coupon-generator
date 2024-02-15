@@ -40,8 +40,6 @@ public class CouponController {
 
     @PostMapping("/manage")
     public ApiResponse getCoupons(@RequestBody ApiRequest apiRequest) {
-
-        System.out.println(apiRequest);
         return service.getCoupons(apiRequest);
     }
 

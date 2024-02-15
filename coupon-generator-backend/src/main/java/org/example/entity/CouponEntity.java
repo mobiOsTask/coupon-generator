@@ -18,7 +18,9 @@ public class CouponEntity extends Auditable{
     private int count;
     private String type;
     private String displayValue;
+    @JsonIgnore
     private int length;
+    @JsonIgnore
     private String regex;
     private int usageCount;
     private double amount;
