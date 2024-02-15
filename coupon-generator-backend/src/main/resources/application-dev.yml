@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mobios_coupon_generate
+    username: root
+    password: 2367
+  jpa:
+    hibernate:
+      ddl-auto: create

@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: dev
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: DEBUG
+  file:
+    name: logs/appLog.log
