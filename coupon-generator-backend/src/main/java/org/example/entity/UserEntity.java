@@ -17,4 +17,8 @@ public class UserEntity {
     private String userName;
     private String address;
     private boolean isDeleted;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private AdminEntity createdAdmin;
 }

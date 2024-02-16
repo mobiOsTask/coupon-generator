@@ -26,9 +26,10 @@ class UserControllerTest {
 
     @Test
     void addUserTest(){
-        when(userService.addUser(userDTO)).thenReturn(new ApiResponse());
+        int adminId = 1;
+        when(userService.addUser(userDTO, adminId)).thenReturn(new ApiResponse());
 
-        ApiResponse apiResponse = userController.addUser(userDTO);
+        ApiResponse apiResponse = userController.addUser(userDTO, adminId);
 
         assertNotNull(apiResponse);
     }

@@ -7,7 +7,7 @@ import org.example.entity.UserEntity;
 import java.util.List;
 
 public interface UserService {
-    ApiResponse addUser(UserDTO userDTO);
+    ApiResponse addUser(UserDTO userDTO, int adminId);
     ApiResponse getUsers();
     ApiResponse getUserById(int userId);
     ApiResponse deleteUser(int userId);

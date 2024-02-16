@@ -3,8 +3,10 @@ package org.example.service.impl;
 import jakarta.transaction.Transactional;
 import org.example.dto.ApiResponse;
 import org.example.dto.UserDTO;
+import org.example.entity.AdminEntity;
 import org.example.entity.CouponEntity;
 import org.example.entity.UserEntity;
+import org.example.repository.AdminRepository;
 import org.example.repository.CouponRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
@@ -30,6 +32,9 @@ public class UserServiceImpl implements UserService {
     CouponRepository couponRepository;
 
     @Autowired
+    AdminRepository adminRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Autowired
@@ -38,16 +43,25 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public ApiResponse addUser(UserDTO userDTO) {
+    public ApiResponse addUser(UserDTO userDTO, int adminId) {
         logger.info("Add User Starts");
-        UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-        userRepository.save(userEntity);
-
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
-        apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
-        apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_CREATED, null));
-        logger.info("User Added {} " , userEntity.getUserId());
+        UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+        Optional<AdminEntity> adminEntity = adminRepository.findById(adminId);
+
+        if(adminEntity.isPresent()){
+            userEntity.setCreatedAdmin(adminEntity.get());
+            userRepository.save(userEntity);
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+            apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_CREATED, null));
+            logger.info("User Added {} " , userEntity.getUserId());
+        }else{
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+            apiResponse.setStatusCode(RequestStatus.NOT_FOUND.getStatusCode());
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.ADMIN_NOT_FOUND, null));
+        }
+        logger.info("Add User Ends");
         return apiResponse;
     }
 

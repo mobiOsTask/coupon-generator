@@ -68,4 +68,8 @@ public class ResponseCodes {
     public static final String USER_HAS_DELETED = "10004";
 
     public static final String USER_FOUND = "10005";
+
+    public static final String ADMIN_CREATED = "11000";
+
+    public static final String ADMIN_NOT_FOUND = "11003";
 }

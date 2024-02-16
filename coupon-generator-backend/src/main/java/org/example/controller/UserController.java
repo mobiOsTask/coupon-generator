@@ -15,8 +15,8 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/")
-    public ApiResponse addUser(@RequestBody UserDTO userDTO){
-        return userService.addUser(userDTO);
+    public ApiResponse addUser(@RequestBody UserDTO userDTO, @RequestParam("adminId") int adminId){
+        return userService.addUser(userDTO, adminId);
     }
 
     @GetMapping("/")
