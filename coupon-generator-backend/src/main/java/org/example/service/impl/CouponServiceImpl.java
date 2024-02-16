@@ -31,9 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -194,6 +192,16 @@ public class CouponServiceImpl implements CouponService {
         Page<CouponEntity> all = couponRepository.getRedeemableCoupons(pageRequest,is_redeemable);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCouponList(all);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        return apiResponse;
+    }
+
+    @Override
+    public ApiResponse getCouponData(PageRequest pageRequest, String couponNumber) {
+        Page<CouponUserEntity> all = couponUserRepository.getCouponData(pageRequest,couponNumber);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCouponUserList(all);
         apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
         apiResponse.setResponseCode(ResponseCodes.SUCCESS);
         return apiResponse;

@@ -17,6 +17,7 @@ import java.util.List;
 public class ApiResponse extends  Response{
 
     Page<CouponEntity> couponList;
+    Page<CouponUserEntity> couponUserList;
     Page<CampaignEntity> campaignList;
     CampaignEntity campaignEntity;
     List<AppEntity> appList;

@@ -31,5 +31,5 @@ public class CouponUserEntity {
 
     @ManyToOne
     @JoinColumn(name = "coupon_id")
-    private UserEntity coupon;
+    private CouponEntity coupon;
 }
