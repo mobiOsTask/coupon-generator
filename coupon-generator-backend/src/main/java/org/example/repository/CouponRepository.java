@@ -7,12 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
@@ -46,8 +42,12 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             @Param("displayValue") String displayValue,
             Pageable pageable);
 
+    @Query("SELECT c FROM CouponEntity c WHERE c.logicEntity.campaignEntity.campaignId =:campaignId")
+    Page<CouponEntity> getCouponEntityByCampaignId(@Param("campaignId") int campaignId, Pageable pageable);
 
+    @Query("SELECT c.logicEntity.campaignEntity.appEntity.appId FROM CouponEntity c WHERE c.number=:number")
+    int getAppByCouponNumber(@Param("number") String number);
 
-
-
+    @Query("SELECT c.logicEntity.campaignEntity.campaignId FROM CouponEntity c WHERE c.number=:number")
+    int getCampaignByCouponNumber(@Param("number") String number);
 }

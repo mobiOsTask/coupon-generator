@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -53,6 +54,9 @@ public class CouponServiceImpl implements CouponService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CampaignRepository campaignRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -94,7 +98,7 @@ public class CouponServiceImpl implements CouponService {
                     logicRepository.save(logicEntity);
                     Set<String> couponNumbers = Utils.validateCouponNumber(data);
                     List<CouponEntity> coupons = couponNumbers.stream()
-                            .map(couponNumber -> Utils.getCouponEntity(couponNumber, logicEntity))
+                            .map(couponNumber -> Utils.getCouponEntity(couponNumber, logicEntity, data.getIsRedeemable()))
                             .collect(Collectors.toList());
                     System.out.println(coupons);
                     all.add(coupons);
@@ -222,7 +226,54 @@ public class CouponServiceImpl implements CouponService {
         response.setResponseCode(ResponseCodes.SUCCESS);
         return response;
     }
+    @Override
+    public ApiResponse getAppByCouponNumber(String number){
+        ApiResponse apiResponse = new ApiResponse();
 
+        int appId = couponRepository.getAppByCouponNumber(number);
+        apiResponse.setMessage("App Id : "+appId);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
 
+        return apiResponse;
+    }
+    @Override
+    public ApiResponse getCampaignByCouponNumber(String number){
+        ApiResponse apiResponse = new ApiResponse();
+        int campaignId = couponRepository.getCampaignByCouponNumber(number);
+        apiResponse.setMessage("Campaign Id : "+campaignId);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+
+        return apiResponse;
+    }
+    @Override
+    public ApiResponse getCouponEntityByCampaignId(int campaignId, Pageable pageable){
+        ApiResponse apiResponse = new ApiResponse();
+        Page<CouponEntity> couponEntityList = couponRepository.getCouponEntityByCampaignId(campaignId, pageable);
+        if(couponEntityList != null){
+            apiResponse.setCouponList(couponEntityList);
+            apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        }else{
+            apiResponse.setStatus(RequestStatus.NOT_FOUND.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+        }
+        return apiResponse;
+    }
+    @Override
+    public ApiResponse getCampaignEntityByAppId(int appId, Pageable pageable){
+        ApiResponse apiResponse = new ApiResponse();
+        Page<CampaignEntity> campaignEntities = campaignRepository.getCampaignEntityByAppId(appId, pageable);
+        if(campaignEntities != null){
+            apiResponse.setCampaignList(campaignEntities);
+            apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        }else{
+            apiResponse.setStatus(RequestStatus.NOT_FOUND.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+        }
+        return apiResponse;
+    }
 
 }

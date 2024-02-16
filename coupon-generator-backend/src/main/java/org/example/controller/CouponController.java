@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 
 
 @RestController
@@ -34,7 +32,7 @@ public class CouponController {
 
 
     @PostMapping("/")
-    public void createCoupon(@Valid @RequestBody DTO dto){
+    public void createCoupon(@Valid @RequestBody DTO dto) {
         service.createCoupon(dto);
     }
 
@@ -44,12 +42,24 @@ public class CouponController {
     }
 
     @GetMapping("/check-coupon")
-    public ApiResponse checkCoupon(@RequestParam("number") String number){
+    public ApiResponse checkCoupon(@RequestParam("number") String number) {
         return service.checkCoupon(number);
     }
 
     @PostMapping("/use-coupon")
-    public ApiResponse useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number){
+    public ApiResponse useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number) {
         return service.useCoupon(couponUserDTO, number);
+    }
+
+    @GetMapping("/campaign/coupons")
+    public ApiResponse getCouponsByCampaignId(@RequestParam("campaignId") int campaignId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.getCouponEntityByCampaignId(campaignId, pageable);
+    }
+
+    @GetMapping("/app/campaigns")
+    public ApiResponse getCampaignsByAppId(@RequestParam("appId") int appId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.getCampaignEntityByAppId(appId, pageable);
     }
 }

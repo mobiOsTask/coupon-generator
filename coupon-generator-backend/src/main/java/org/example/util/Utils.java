@@ -1,8 +1,8 @@
 package org.example.util;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import org.example.dto.DTO;
 import org.example.dto.LogicDTO;
+import org.example.dto.DTO;
 import org.example.entity.AppEntity;
 import org.example.entity.CampaignEntity;
 import org.example.entity.CouponEntity;
@@ -43,10 +43,11 @@ public class Utils {
         return logicEntity;
     }
 
-    public static CouponEntity getCouponEntity(String couponNumber, LogicEntity logicEntity) {
+    public static CouponEntity getCouponEntity(String couponNumber, LogicEntity logicEntity, boolean isRedeemable) {
         CouponEntity couponEntity = new CouponEntity();
         couponEntity.setNumber(couponNumber);
         couponEntity.setLogicEntity(logicEntity);
+        couponEntity.setIsRedeemable(isRedeemable);
         return couponEntity;
     }
 

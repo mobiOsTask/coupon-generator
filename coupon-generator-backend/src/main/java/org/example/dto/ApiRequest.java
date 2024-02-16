@@ -25,7 +25,7 @@ public class ApiRequest {
     LocalDateTime dateTo;
     double minAmount;
     double maxAmount;
-    boolean isValid;
+    boolean isRedeemable;
     int campaign_id;
     private Integer page;
     private Integer pageCount;

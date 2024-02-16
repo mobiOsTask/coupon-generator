@@ -23,11 +23,11 @@ public class LogicDTO {
     private LocalDate endDate;
 
 
-    public void setIsValid(boolean isValid){
-        this.isRedeemable = isValid;
+    public void setIsRedeemable(boolean isRedeemable){
+        this.isRedeemable = isRedeemable;
     }
 
-    public boolean getIsValid(){
+    public boolean getIsRedeemable(){
         return isRedeemable;
     }
 }

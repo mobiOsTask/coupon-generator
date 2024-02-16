@@ -7,7 +7,6 @@ import org.example.dto.DTO;
 import org.example.entity.CouponEntity;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Date;
 
 public interface CouponService {
     void createCoupon(DTO dto);
@@ -18,4 +17,9 @@ public interface CouponService {
     ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number);
     void changeCouponUsageCount(String number);
     boolean isValidDate(CouponEntity couponEntity);
+    ApiResponse getAppByCouponNumber(String number);
+    ApiResponse getCampaignByCouponNumber(String number);
+    ApiResponse getCouponEntityByCampaignId(int campaignId, Pageable pageable);
+    ApiResponse getCampaignEntityByAppId(int appId, Pageable pageable);
+
 }
