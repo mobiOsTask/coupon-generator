@@ -28,4 +28,8 @@ public class CouponUserEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private UserEntity coupon;
 }

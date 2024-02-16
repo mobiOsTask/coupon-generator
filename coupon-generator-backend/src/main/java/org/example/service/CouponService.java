@@ -5,8 +5,10 @@ import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.entity.CouponEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 
 public interface CouponService {
     void createCoupon(DTO dto);
@@ -23,4 +25,5 @@ public interface CouponService {
     ApiResponse getCampaignEntityByAppId(int appId, Pageable pageable);
     ApiResponse getRedeemableCouponsByCampaignId(int campaignId, Pageable pageable);
     ApiResponse getRedeemableCampaignsByAppId(int appId, Pageable pageable);
+    ApiResponse getRedeemableCoupons(PageRequest pageRequest,boolean is_redeemable);
 }

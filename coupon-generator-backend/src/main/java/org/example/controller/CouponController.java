@@ -41,6 +41,14 @@ public class CouponController {
         return service.getCoupons(apiRequest);
     }
 
+    @GetMapping("/redeemable")
+    public ApiResponse getRedeemableCoupons(@RequestParam ("page") int page,
+                                            @RequestParam("pageSize") int pageSize,
+                                            @RequestParam("redeemable") boolean is_redeemable ){
+        PageRequest pageRequest = PageRequest.of(page,pageSize);
+        return service.getRedeemableCoupons(pageRequest,is_redeemable);
+    }
+
     @GetMapping("/check-coupon")
     public ApiResponse checkCoupon(@RequestParam("number") String number) {
         return service.checkCoupon(number);

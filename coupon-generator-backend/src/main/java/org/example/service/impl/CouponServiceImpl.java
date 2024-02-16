@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -45,6 +46,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Autowired
     AppRepository appRepository;
+
 
     @Autowired
     CouponUserRepository couponUserRepository;
@@ -73,18 +75,18 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public void createCoupon(DTO dto) {
         logger.info("Create coupon starts");
-        processData(dto);
+        processCouponLogic(dto);
         logger.info("Create coupon ends");
     }
 
-    public void processData(DTO dto) {
+    public void processCouponLogic(DTO dto) {
         logger.info("Process data starts");
         List<List<CouponEntity>> all = new ArrayList<>();
         if (Utils.validateDTO(dto)) { // validates coupon count, start date and end date
 
             AppEntity appEntity = appRepository.findByAppId(dto.getAppId());
             if (appEntity == null) {
-                throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "Invalid App ID"); // validate App Id
+                throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "App ID"); // validate App Id
             }
 
 
@@ -93,7 +95,7 @@ public class CouponServiceImpl implements CouponService {
 
             dto.getLogic().parallelStream().forEach(data -> { //creates a parallel stream to implement parallel processing ,iterate through the dto's logic array
                 System.out.println("Thread: " + Thread.currentThread().getName()); // prints the currently using thread
-                if (Utils.validateCouponDTO(data,dto.getStartDate(),dto.getEndDate())) { // validate coupon dto's type and display value
+                if (Utils.validateLogicDto(data,dto.getStartDate(),dto.getEndDate())) { // validate coupon dto's type and display value
                     LogicEntity logicEntity = Utils.getLogicEntity(data,campaignEntity);
                     logicRepository.save(logicEntity);
                     Set<String> couponNumbers = Utils.validateCouponNumber(data);
@@ -107,7 +109,6 @@ public class CouponServiceImpl implements CouponService {
         }
 
         for (List<CouponEntity> data : all) {
-            System.out.println(Thread.currentThread().getName());
             couponStorageService.saveCoupons(data);
         }
         logger.info("Process data ends");
@@ -188,6 +189,16 @@ public class CouponServiceImpl implements CouponService {
         return couponEntity.getLogicEntity().getStartDate().isBefore(currentDate) && couponEntity.getLogicEntity().getEndDate().isAfter(currentDate);
     }
 
+    @Override
+    public ApiResponse getRedeemableCoupons(PageRequest pageRequest,boolean is_redeemable) {
+        Page<CouponEntity> all = couponRepository.getRedeemableCoupons(pageRequest,is_redeemable);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCouponList(all);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        return apiResponse;
+    }
+
 
     @Override
     public ApiResponse getCoupons(ApiRequest apiRequest) {
@@ -195,30 +206,21 @@ public class CouponServiceImpl implements CouponService {
         PageRequest pageRequest = PageRequest.of(apiRequest.getPage(), apiRequest.getPageCount());
         double minAmount = apiRequest.getMinAmount();
         double maxAmount = apiRequest.getMaxAmount();
-        LocalDateTime dateFrom = apiRequest.getDateFrom();
-        LocalDateTime dateTo = apiRequest.getDateTo();
+
         String type = apiRequest.getType();
         String displayValue = apiRequest.getDisplayValue();
 
+        LocalDate dateFrom = apiRequest.getDateFrom();
+        LocalDate dateTo = apiRequest.getDateTo();
 
-        if (dateFrom != null) {
-//            String date = Utils.formatDateOnly(dateFrom);
-//            System.out.println(date);
-//            dateFrom = Utils.formatDateAndTime(date + " 00:00:00");
-//            System.out.println(dateFrom);
-        }
-        if (dateTo != null) {
-//            String date = Utils.formatDateOnly(dateTo);
-//            System.out.println(date);
-//            dateTo = Utils.parseDateAndTime(date + " 23:59:59");
-//            System.out.println(dateTo);
-        }
+        System.out.println(dateFrom);
+        System.out.println(dateTo);
 
         String isSearch = null;
         if (null != apiRequest.getSearchValue()) {
             isSearch = "true";
         }
-        Page<CouponEntity> all = couponRepository.getAll(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo, minAmount, maxAmount, type, displayValue, pageRequest);
+        Page<CouponEntity> all = couponRepository.getAll(pageRequest,apiRequest.getSearchValue(), isSearch, dateFrom, dateTo, minAmount, maxAmount, type, displayValue);
 
         ApiResponse response = new ApiResponse();
         response.setCouponList(all);

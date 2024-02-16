@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
@@ -23,24 +24,30 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     @Query("UPDATE CouponEntity c SET c.logicEntity.usageCount = :couponUsageCount WHERE c.number = :number")
     void updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
 
-    @Query("select distinct u from CouponEntity u " +
-            " where (:fromDate is null or u.createdDatetime >= :fromDate) " +
-            " and (:toDate is null or u.createdDatetime <= :toDate)" +
-            " and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
-            " or (:minAmount is null or u.logicEntity.amount >= :minAmount)" +
-            " and (:maxAmount is null or u.logicEntity.amount <= :maxAmount)" +
-            " or (:type is null or u.logicEntity.type = :type)" +
-            " and (:displayValue is null or u.logicEntity.displayValue = :displayValue)")
+    @Query("select u from CouponEntity u " +
+            "where (:dateFrom is null or CouponEntity .logicEntity.startDate >= :dateFrom) " +
+            "and (:dateTo is null or CouponEntity .logicEntity.endDate <= :dateTo)" +
+            "and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
+            "and (:minAmount is null or u.logicEntity.amount >= :minAmount)" +
+            "and (:maxAmount is null or u.logicEntity.amount <= :maxAmount)" +
+            "and (:type is null or u.logicEntity.type = :type)" +
+            "and (:displayValue is null or u.logicEntity.displayValue = :displayValue)")
     Page<CouponEntity> getAll(
+            Pageable pageable,
             @Param("val") String val,
             @Param("searchEnabled") String searchEnabled,
-            @Param("fromDate") LocalDateTime fromDate,
-            @Param("toDate") LocalDateTime toDate,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
             @Param("minAmount") Double minAmount,
             @Param("maxAmount") Double maxAmount,
             @Param("type") String type,
-            @Param("displayValue") String displayValue,
-            Pageable pageable);
+            @Param("displayValue") String displayValue);
+
+
+
+    @Query("SELECT u FROM CouponEntity u WHERE (u.isRedeemable = :is_redeemable)")
+    Page<CouponEntity> getRedeemableCoupons(Pageable pageable, @Param("is_redeemable") boolean is_redeemable);
+
 
     @Query("SELECT c FROM CouponEntity c WHERE c.logicEntity.campaignEntity.campaignId =:campaignId")
     Page<CouponEntity> getCouponEntitiesByCampaignId(@Param("campaignId") int campaignId, Pageable pageable);

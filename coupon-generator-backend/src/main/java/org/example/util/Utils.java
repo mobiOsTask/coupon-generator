@@ -12,6 +12,8 @@ import org.example.exception.DLAppValidationsException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Utils {
@@ -102,7 +104,7 @@ public class Utils {
         }
     }
 
-    public static boolean validateCouponDTO(LogicDTO couponDto, LocalDate startDate, LocalDate endDate) {
+    public static boolean validateLogicDto(LogicDTO couponDto, LocalDate startDate, LocalDate endDate) {
         LocalDate couponDtoStartDate = couponDto.getStartDate();
         LocalDate couponDtoEndDate = couponDto.getEndDate();
 
@@ -185,15 +187,14 @@ public class Utils {
         return parse;
     }
 
-    public static Date parseDateAndTime(String dateTime) {
-        Date parsedDate = null;
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            parsedDate = inputFormat.parse(dateTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return parsedDate;
+    public static LocalDateTime convertStringToLocalDateTime(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(dateString, formatter);
+    }
+
+    public static String convertLocalDateToString(LocalDate localDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return localDate.format(formatter);
     }
 
 }
