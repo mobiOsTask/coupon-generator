@@ -21,5 +21,6 @@ public interface CouponService {
     ApiResponse getCampaignByCouponNumber(String number);
     ApiResponse getCouponEntityByCampaignId(int campaignId, Pageable pageable);
     ApiResponse getCampaignEntityByAppId(int appId, Pageable pageable);
-
+    ApiResponse getRedeemableCouponsByCampaignId(int campaignId, Pageable pageable);
+    ApiResponse getRedeemableCampaignsByAppId(int appId, Pageable pageable);
 }

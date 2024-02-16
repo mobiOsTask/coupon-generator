@@ -10,5 +10,8 @@ import org.springframework.data.repository.query.Param;
 public interface CampaignRepository extends JpaRepository<CampaignEntity,Integer> {
 
     @Query("SELECT c FROM CampaignEntity c WHERE c.appEntity.appId =:appId")
-    Page<CampaignEntity> getCampaignEntityByAppId(@Param("appId") int appId, Pageable pageable);
+    Page<CampaignEntity> getCampaignEntitiesByAppId(@Param("appId") int appId, Pageable pageable);
+
+    @Query("SELECT c FROM CampaignEntity c WHERE c.appEntity.appId =:appId AND CURRENT_DATE BETWEEN c.startDate AND c.endDate")
+    Page<CampaignEntity> getValidCampaignEntitiesByAppId(@Param("appId") int appId, Pageable pageable);
 }

@@ -100,7 +100,7 @@ public class CouponServiceImpl implements CouponService {
                     List<CouponEntity> coupons = couponNumbers.stream()
                             .map(couponNumber -> Utils.getCouponEntity(couponNumber, logicEntity, data.getIsRedeemable()))
                             .collect(Collectors.toList());
-                    System.out.println(coupons);
+//                    System.out.println(coupons);
                     all.add(coupons);
                 }
             });
@@ -250,7 +250,11 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public ApiResponse getCouponEntityByCampaignId(int campaignId, Pageable pageable){
         ApiResponse apiResponse = new ApiResponse();
-        Page<CouponEntity> couponEntityList = couponRepository.getCouponEntityByCampaignId(campaignId, pageable);
+        Page<CouponEntity> couponEntityList = couponRepository.getCouponEntitiesByCampaignId(campaignId, pageable);
+        return getCouponApiResponse(apiResponse, couponEntityList);
+    }
+
+    private ApiResponse getCouponApiResponse(ApiResponse apiResponse, Page<CouponEntity> couponEntityList) {
         if(couponEntityList != null){
             apiResponse.setCouponList(couponEntityList);
             apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
@@ -261,10 +265,29 @@ public class CouponServiceImpl implements CouponService {
         }
         return apiResponse;
     }
+
     @Override
     public ApiResponse getCampaignEntityByAppId(int appId, Pageable pageable){
         ApiResponse apiResponse = new ApiResponse();
-        Page<CampaignEntity> campaignEntities = campaignRepository.getCampaignEntityByAppId(appId, pageable);
+        Page<CampaignEntity> campaignEntities = campaignRepository.getCampaignEntitiesByAppId(appId, pageable);
+        return getCampaignApiResponse(apiResponse, campaignEntities);
+    }
+
+    @Override
+    public ApiResponse getRedeemableCouponsByCampaignId(int campaignId, Pageable pageable) {
+        ApiResponse apiResponse = new ApiResponse();
+        Page<CouponEntity> redeemableCouponEntities = couponRepository.getRedeemableCouponEntitiesByCampaignId(campaignId, pageable);
+        return getCouponApiResponse(apiResponse, redeemableCouponEntities);
+    }
+
+    @Override
+    public ApiResponse getRedeemableCampaignsByAppId(int appId, Pageable pageable) {
+        ApiResponse apiResponse = new ApiResponse();
+        Page<CampaignEntity> campaignEntities = campaignRepository.getValidCampaignEntitiesByAppId(appId, pageable);
+        return getCampaignApiResponse(apiResponse, campaignEntities);
+    }
+
+    private ApiResponse getCampaignApiResponse(ApiResponse apiResponse, Page<CampaignEntity> campaignEntities) {
         if(campaignEntities != null){
             apiResponse.setCampaignList(campaignEntities);
             apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());

@@ -62,4 +62,16 @@ public class CouponController {
         Pageable pageable = PageRequest.of(page, size);
         return service.getCampaignEntityByAppId(appId, pageable);
     }
+
+    @GetMapping("/campaign/redeemable-coupons")
+    public ApiResponse getRedeemableCouponsByCampaignId(@RequestParam("campaignId") int campaignId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return service.getRedeemableCouponsByCampaignId(campaignId, pageable);
+    }
+
+    @GetMapping("/app/valid-campaigns")
+    public ApiResponse getValidCampaignsByAppId(@RequestParam("appId") int appId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.getRedeemableCampaignsByAppId(appId, pageable);
+    }
 }

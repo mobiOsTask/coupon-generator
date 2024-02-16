@@ -43,7 +43,10 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             Pageable pageable);
 
     @Query("SELECT c FROM CouponEntity c WHERE c.logicEntity.campaignEntity.campaignId =:campaignId")
-    Page<CouponEntity> getCouponEntityByCampaignId(@Param("campaignId") int campaignId, Pageable pageable);
+    Page<CouponEntity> getCouponEntitiesByCampaignId(@Param("campaignId") int campaignId, Pageable pageable);
+
+    @Query("SELECT c FROM CouponEntity c WHERE c.logicEntity.campaignEntity.campaignId =:campaignId AND c.isRedeemable = true")
+    Page<CouponEntity> getRedeemableCouponEntitiesByCampaignId(@Param("campaignId") int campaignId, Pageable pageable);
 
     @Query("SELECT c.logicEntity.campaignEntity.appEntity.appId FROM CouponEntity c WHERE c.number=:number")
     int getAppByCouponNumber(@Param("number") String number);
