@@ -71,5 +71,11 @@ public class ResponseCodes {
 
     public static final String ADMIN_CREATED = "11000";
 
+    public static final String ADMIN_LOG_IN = "11004";
+
+    public static final String ADMIN_LOG_IN_FAILED = "11005";
+
     public static final String ADMIN_NOT_FOUND = "11003";
+
+    public static final String ADMINS_ARE_EMPTY = "11006";
 }
