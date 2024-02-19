@@ -16,6 +16,7 @@ public class CouponEntity extends Auditable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int couponId;
     private String number;
+    private int usageCount;
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isRedeemable;
 

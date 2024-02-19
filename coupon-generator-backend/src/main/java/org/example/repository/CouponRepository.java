@@ -21,7 +21,7 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
     void updateCouponValidity(@Param("number") String number);
 
     @Modifying
-    @Query("UPDATE CouponEntity c SET c.logicEntity.usageCount = :couponUsageCount WHERE c.number = :number")
+    @Query("UPDATE CouponEntity c SET c.usageCount = :couponUsageCount WHERE c.number = :number")
     void updateCouponUsageCount(@Param("couponUsageCount") int couponUsageCount, @Param("number") String number);
 
     @Query("select u from CouponEntity u " +

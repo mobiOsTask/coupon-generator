@@ -144,6 +144,8 @@ public class CouponServiceImpl implements CouponService {
             CouponUserEntity couponUserEntity = modelMapper.map(couponUserDTO, CouponUserEntity.class);
             Optional<UserEntity> userEntity = userRepository.findById(couponUserEntity.getUser().getUserId());
             CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
+            couponUserEntity.setCoupon(couponEntity);
+            couponUserEntity.setNumber(number);
 
             if (userEntity.isPresent()) {
                 // change isValid if usage count == 1
@@ -175,7 +177,7 @@ public class CouponServiceImpl implements CouponService {
     public void changeCouponUsageCount(String number) {
         logger.info("Change coupon usage count starts");
         CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
-        int couponUsageCount = couponEntity.getLogicEntity().getUsageCount();
+        int couponUsageCount = couponEntity.getUsageCount();
         couponUsageCount--;
         couponRepository.updateCouponUsageCount(couponUsageCount, number);
         logger.info("Coupon usage count ends");
