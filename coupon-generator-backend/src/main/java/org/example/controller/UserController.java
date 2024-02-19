@@ -38,4 +38,11 @@ public class UserController {
     public ApiResponse updateApp(@RequestBody UserDTO userDTO, @PathVariable int userId){
         return userService.updateUser(userDTO, userId);
     }
+    @PostMapping("/log-in")
+    public ApiResponse adminLogIn(@RequestParam(name = "name") String name, @RequestParam(name = "password") String password){
+        return userService.userLogin(name, password);
+    }
+
+
+
 }

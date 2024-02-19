@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     Messages messages;
+
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -147,7 +150,26 @@ public class UserServiceImpl implements UserService {
         return apiResponse;
     }
 
-    public void saveCoupons(List<CouponEntity> data){
 
+    @Transactional
+    @Override
+    public ApiResponse userLogin(String name, String password) {
+        ApiResponse apiResponse = new ApiResponse();
+        List<UserEntity> userEntities = userRepository.userLogIn(name);
+        if(!userEntities.isEmpty()){
+            for (UserEntity userEntity: userEntities) {
+                if(bCryptPasswordEncoder.matches(password, userEntity.getPassword())){
+                    userRepository.updateLogIn(userEntity.getUserId());
+                    apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+                    apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+                    apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_LOG_IN, null));
+                }
+            }
+        }else{
+            apiResponse.setStatus(RequestStatus.NOT_FOUND.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.NOT_FOUND);
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_LOG_IN_FALIED, null));
+        }
+        return apiResponse;
     }
 }

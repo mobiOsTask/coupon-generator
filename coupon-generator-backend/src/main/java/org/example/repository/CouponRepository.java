@@ -29,7 +29,7 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             "and (:dateTo is null or u .logicEntity.endDate <= :dateTo)" +
             "and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
             "and (:minAmount is null or u.logicEntity.amount >= :minAmount)" +
-            "and (:maxAmount is null or u.logicEntity.amount <= :maxAmount)" +
+            "and (:maxAmount = 0 or u.logicEntity.amount <= :maxAmount)" +
             "and (:type is null or u.logicEntity.type = :type)" +
             "and (:displayValue is null or u.logicEntity.displayValue = :displayValue)")
     Page<CouponEntity> getAll(

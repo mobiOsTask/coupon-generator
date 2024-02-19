@@ -50,6 +50,7 @@ public class Utils {
         couponEntity.setNumber(couponNumber);
         couponEntity.setLogicEntity(logicEntity);
         couponEntity.setIsRedeemable(isRedeemable);
+        couponEntity.setUsageCount(logicEntity.getUsageCount());
         return couponEntity;
     }
 

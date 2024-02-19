@@ -12,4 +12,6 @@ public interface UserService {
     ApiResponse getUserById(int userId);
     ApiResponse deleteUser(int userId);
     ApiResponse updateUser(UserDTO userDTO, int userId);
+
+    ApiResponse userLogin(String name, String password);
 }

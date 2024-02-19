@@ -16,7 +16,10 @@ public class UserEntity {
     private int userId;
     private String userName;
     private String address;
+    private String name;
+    private String password;
     private boolean isDeleted;
+    private boolean isLoggedIn;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
