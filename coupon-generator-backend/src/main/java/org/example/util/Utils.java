@@ -1,6 +1,7 @@
 package org.example.util;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
+import org.example.dto.ApiRequest;
 import org.example.dto.LogicDTO;
 import org.example.dto.DTO;
 import org.example.entity.AppEntity;
@@ -196,6 +197,21 @@ public class Utils {
     public static String convertLocalDateToString(LocalDate localDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return localDate.format(formatter);
+    }
+
+    public static void validateApiRequest(ApiRequest apiRequest){
+
+        List<String> values = Arrays.asList("rs", "point", "currency");
+        String displayValue = apiRequest.getDisplayValue();
+        String type= apiRequest.getType();
+
+        if (displayValue != null && !values.contains(displayValue.toLowerCase())){
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "Display Value");
+        }
+        if (type != null && values.contains(type.toLowerCase())){
+            throw new DLAppValidationsException(ResponseCodes.BAD_REQUEST_CODE, "Type");
+        }
+
     }
 
 }

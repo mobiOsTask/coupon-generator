@@ -9,9 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface CouponService {
-    void createCoupon(DTO dto);
+    ApiResponse createCoupon(DTO dto);
 
     ApiResponse getCoupons(ApiRequest apiRequest);
+    ApiResponse getCouponCounts(ApiRequest apiRequest);
 
     ApiResponse checkCoupon(String number);
     ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number);

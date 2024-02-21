@@ -38,4 +38,8 @@ public class Messages {
         return accessor.getMessage("message.code.401", new Object[] { _field });
     }
 
+    public String getCouponGenerationMessege(final String _field) {
+        return accessor.getMessage("message.code.6004", new Object[] { _field });
+    }
+
 }
