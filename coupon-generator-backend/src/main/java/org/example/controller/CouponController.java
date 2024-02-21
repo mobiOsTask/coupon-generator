@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.example.dto.ApiRequest;
@@ -61,8 +62,8 @@ public class CouponController {
     }
 
     @PostMapping("/use-coupon")
-    public ApiResponse useCoupon(@RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number) {
-        return service.useCoupon(couponUserDTO, number);
+    public ApiResponse useCoupon(HttpServletRequest request, @RequestBody CouponUserDTO couponUserDTO, @RequestParam("number") String number) {
+        return service.useCoupon(request, couponUserDTO, number);
     }
 
     @GetMapping("/campaign/coupons")

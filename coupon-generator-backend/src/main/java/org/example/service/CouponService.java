@@ -1,5 +1,6 @@
 package org.example.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.dto.ApiRequest;
 import org.example.dto.ApiResponse;
 import org.example.dto.CouponUserDTO;
@@ -14,7 +15,7 @@ public interface CouponService {
     ApiResponse getCoupons(ApiRequest apiRequest);
 
     ApiResponse checkCoupon(String number);
-    ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number);
+    ApiResponse useCoupon(HttpServletRequest request, CouponUserDTO couponUserDTO, String number);
     void changeCouponUsageCount(String number);
     boolean isValidDate(CouponEntity couponEntity);
     ApiResponse getAppByCouponNumber(String number);

@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.example.dto.ApiRequest;
 import org.example.dto.ApiResponse;
@@ -135,7 +136,7 @@ public class CouponServiceImpl implements CouponService {
 
     @Transactional
     @Override
-    public ApiResponse useCoupon(CouponUserDTO couponUserDTO, String number) {
+    public ApiResponse useCoupon(HttpServletRequest request, CouponUserDTO couponUserDTO, String number) {
         logger.info("Coupon use starts {} ", couponUserDTO.getUsedCouponId());
         ApiResponse apiResponse = new ApiResponse();
 
@@ -146,6 +147,8 @@ public class CouponServiceImpl implements CouponService {
             CouponEntity couponEntity = couponRepository.getCouponEntityByNumber(number);
             couponUserEntity.setCoupon(couponEntity);
             couponUserEntity.setNumber(number);
+            couponUserEntity.setIpAddress(request.getRemoteAddr());
+            couponUserEntity.setBrowserId(request.getHeader("User-Agent"));
 
             if (userEntity.isPresent()) {
                 // change isValid if usage count == 1

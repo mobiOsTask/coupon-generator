@@ -29,6 +29,10 @@ public class CouponUserEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    private String ipAddress;
+
+    private String browserId;
+
     @ManyToOne
     @JoinColumn(name = "coupon_id")
     private CouponEntity coupon;
