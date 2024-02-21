@@ -33,13 +33,18 @@ public class CouponController {
 
 
     @PostMapping("/")
-    public void createCoupon(@Valid @RequestBody DTO dto) {
-        service.createCoupon(dto);
+    public ApiResponse createCoupon(@Valid @RequestBody DTO dto) {
+        return service.createCoupon(dto);
     }
 
     @PostMapping("/manage")
     public ApiResponse getCoupons(@RequestBody ApiRequest apiRequest) {
         return service.getCoupons(apiRequest);
+    }
+
+    @PostMapping("/coupon-data-count")
+    public ApiResponse getCouponCounts(@RequestBody ApiRequest apiRequest) {
+        return service.getCouponCounts(apiRequest);
     }
 
     @GetMapping("/redeemable")
@@ -51,7 +56,7 @@ public class CouponController {
     }
 
     @GetMapping("/coupon-data")
-    public ApiResponse getAllCouponDate(@RequestParam ("number") String couponNumber,@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
+    public ApiResponse getAllCouponData(@RequestParam ("number") String couponNumber, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
         PageRequest pageRequest = PageRequest.of(page,pageSize);
         return service.getCouponData(pageRequest,couponNumber);
     }

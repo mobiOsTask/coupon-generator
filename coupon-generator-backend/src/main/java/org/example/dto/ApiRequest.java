@@ -32,49 +32,13 @@ public class ApiRequest {
     private Integer pageCount;
     private String searchValue;
 
-    String refNumber;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    Date date;
-    String note;
-    String isActive;
+    public void setIsRedeemable(boolean isRedeemable){
+        this.isRedeemable = isRedeemable;
+    }
 
-
-
-    String status;
-    String description;
-    Long id;
-    Long productId;
-    Long technicianId;
-
-    List<Long> idList;
-
-    //driver
-    private String name;
-    private String userName;
-    private String password;
-    private String mobileNo;
-    private String email;
-    private String area;
-    private String address;
-    private String nic;
-
-
-    private Long ruleId;
-    private Integer percentage;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date startDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date endDate;
-
-
-
-    private String userType;
-    private Long userId;
-    private Long deliveryDataFileId;
-
-
-    private Boolean sendSMS;
-    private String content;
+    public boolean getIsRedeemable(){
+        return isRedeemable;
+    }
 
 
 }

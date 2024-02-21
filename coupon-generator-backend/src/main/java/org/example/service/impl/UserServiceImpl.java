@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         logger.info("Add User Starts");
         ApiResponse apiResponse = new ApiResponse();
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+        userEntity.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         Optional<AdminEntity> adminEntity = adminRepository.findById(adminId);
 
         if(adminEntity.isPresent()){

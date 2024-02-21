@@ -72,10 +72,16 @@ public class CouponServiceImpl implements CouponService {
     private static final Logger logger = LoggerFactory.getLogger(CouponServiceImpl.class);
 
     @Override
-    public void createCoupon(DTO dto) {
+    public ApiResponse createCoupon(DTO dto) {
         logger.info("Create coupon starts");
         processCouponLogic(dto);
+        long count = dto.getCouponCount();
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        apiResponse.setMessage(messages.getCouponGenerationMessege(String.valueOf(count)));
         logger.info("Create coupon ends");
+        return apiResponse;
     }
 
     public void processCouponLogic(DTO dto) {
@@ -101,7 +107,6 @@ public class CouponServiceImpl implements CouponService {
                     List<CouponEntity> coupons = couponNumbers.stream()
                             .map(couponNumber -> Utils.getCouponEntity(couponNumber, logicEntity, data.getIsRedeemable()))
                             .collect(Collectors.toList());
-//                    System.out.println(coupons);
                     all.add(coupons);
                 }
             });
@@ -216,6 +221,8 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public ApiResponse getCoupons(ApiRequest apiRequest) {
 
+        Utils.validateApiRequest(apiRequest);
+
         PageRequest pageRequest = PageRequest.of(apiRequest.getPage(), apiRequest.getPageCount());
         double minAmount = apiRequest.getMinAmount();
         double maxAmount = apiRequest.getMaxAmount();
@@ -226,9 +233,6 @@ public class CouponServiceImpl implements CouponService {
         LocalDate dateFrom = apiRequest.getDateFrom();
         LocalDate dateTo = apiRequest.getDateTo();
 
-        System.out.println(dateFrom);
-        System.out.println(dateTo);
-
         String isSearch = null;
         if (null != apiRequest.getSearchValue()) {
             isSearch = "true";
@@ -237,6 +241,38 @@ public class CouponServiceImpl implements CouponService {
 
         ApiResponse response = new ApiResponse();
         response.setCouponList(all);
+        response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
+        response.setResponseCode(ResponseCodes.SUCCESS);
+        return response;
+    }
+
+    @Override
+    public ApiResponse getCouponCounts(ApiRequest apiRequest) {
+
+        Utils.validateApiRequest(apiRequest);
+
+        double minAmount = apiRequest.getMinAmount();
+        double maxAmount = apiRequest.getMaxAmount();
+
+        String type = apiRequest.getType();
+        String displayValue = apiRequest.getDisplayValue();
+        boolean isRedeemable = apiRequest.getIsRedeemable();
+
+        LocalDate dateFrom = apiRequest.getDateFrom();
+        LocalDate dateTo = apiRequest.getDateTo();
+
+
+        String isSearch = null;
+        if (null != apiRequest.getSearchValue()) {
+            isSearch = "true";
+        }
+        int all = couponRepository.getAllCounts(apiRequest.getSearchValue(), isSearch, dateFrom, dateTo, minAmount, maxAmount, type, displayValue,isRedeemable);
+
+        int totalCount = all;
+
+        ApiResponse response = new ApiResponse();
+        response.setCount(totalCount);
+
         response.setStatus(RequestStatus.SUCCESS.getStatusMessage());
         response.setResponseCode(ResponseCodes.SUCCESS);
         return response;

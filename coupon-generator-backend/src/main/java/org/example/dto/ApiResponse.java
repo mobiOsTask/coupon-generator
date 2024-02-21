@@ -26,5 +26,6 @@ public class ApiResponse extends  Response{
     List<UserEntity> userList;
     UserEntity userEntity;
     CouponEntity couponEntity;
+    Integer count;
 
 }

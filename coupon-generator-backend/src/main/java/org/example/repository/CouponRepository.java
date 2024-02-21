@@ -43,6 +43,25 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
             @Param("type") String type,
             @Param("displayValue") String displayValue);
 
+    @Query("select count(u) from CouponEntity u " +
+            "where (:dateFrom is null or u.logicEntity.startDate >= :dateFrom) " +
+            "and (:dateTo is null or u.logicEntity.endDate <= :dateTo)" +
+            "and (:searchEnabled is null or (u.number like concat(concat('%', :val), '%')))" +
+            "and (u.isRedeemable = :is_redeemable)" +
+            "and (:minAmount is null or u.logicEntity.amount >= :minAmount)" +
+            "and (:maxAmount = 0 or u.logicEntity.amount <= :maxAmount)" +
+            "and (:type is null or u.logicEntity.type = :type)" +
+            "and (:displayValue is null or u.logicEntity.displayValue = :displayValue)")
+    int getAllCounts(
+            @Param("val") String val,
+            @Param("searchEnabled") String searchEnabled,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
+            @Param("minAmount") Double minAmount,
+            @Param("maxAmount") Double maxAmount,
+            @Param("type") String type,
+            @Param("displayValue") String displayValue,
+            @Param("is_redeemable") boolean is_redeemable);
 
 
     @Query("SELECT u FROM CouponEntity u WHERE (u.isRedeemable = :is_redeemable)")
@@ -60,6 +79,5 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Integer> {
 
     @Query("SELECT c.logicEntity.campaignEntity.campaignId FROM CouponEntity c WHERE c.number=:number")
     int getCampaignByCouponNumber(@Param("number") String number);
-
 
 }
