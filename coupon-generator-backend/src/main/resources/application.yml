@@ -10,3 +10,11 @@ logging:
         web: DEBUG
   file:
     name: logs/appLog.log
+
+# App Properties
+couponGenerator:
+  jwtSecret: mobiSecretKey
+  jwtExpirationMs: 900000
+  jwtCookieName: mobi-jwt
+  jwtRefreshCookieName: mobi-jwt-refresh
+
