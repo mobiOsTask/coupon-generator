@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.entity.UserEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -31,6 +32,19 @@ public class TokenService {
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
+        return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public String generateTokenForUser(UserEntity userEntity) {
+        Instant now = Instant.now();
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                .subject(userEntity.getUserName())
+                .build();
+
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }
