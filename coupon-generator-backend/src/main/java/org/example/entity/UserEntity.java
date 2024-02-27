@@ -32,4 +32,9 @@ public class UserEntity extends Auditable{
     @JoinColumn(name = "user_role")
     private UserRoleEntity userRoleEntity;
 
+    public UserEntity(String userName, String address, String password) {
+        this.userName = userName;
+        this.address = address;
+        this.password = password;
+    }
 }

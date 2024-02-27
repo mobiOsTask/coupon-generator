@@ -77,7 +77,7 @@ public class JWTUtils {
     }
 
     public ResponseCookie getCleanJwtRefreshCookie() {
-        return ResponseCookie.from(jwtRefreshCookie, null).path("/api/auth").build();
+        return ResponseCookie.from(jwtRefreshCookie, null).path("/auth").build();
     }
 
 }

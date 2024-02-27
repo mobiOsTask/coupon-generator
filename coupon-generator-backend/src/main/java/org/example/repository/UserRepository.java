@@ -24,4 +24,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     @Modifying
     @Query("UPDATE UserEntity a SET a.isLoggedIn = true WHERE a.userId =:userId")
     void updateLogIn(@Param("userId") int userId);
+
+    boolean existsByUserName(String userName);
+    boolean existsByAddress(String address);
 }
