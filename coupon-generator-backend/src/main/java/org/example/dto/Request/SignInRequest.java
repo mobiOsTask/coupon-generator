@@ -1,4 +1,4 @@
-package org.example.dto;
+package org.example.dto.Request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-    private int userId;
+public class SignInRequest {
     private String userName;
-    private String email;
     private String password;
+    private String email;
 }

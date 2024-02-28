@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
         if(optionalUserEntity.isPresent()){
             UserEntity userEntity = optionalUserEntity.get();
             userEntity.setUserName(userDTO.getUserName());
-            userEntity.setAddress(userDTO.getAddress());
+            userEntity.setEmail(userDTO.getEmail());
             userRepository.save(userEntity);
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());

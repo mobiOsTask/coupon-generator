@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = "user_name"),
-        @UniqueConstraint(columnNames = "address")
+        @UniqueConstraint(columnNames = "email")
 })
 public class UserEntity extends Auditable{
     @Id
@@ -19,7 +19,7 @@ public class UserEntity extends Auditable{
     private int userId;
     @Column(name = "user_name")
     private String userName;
-    private String address;
+    private String email;
     private String password;
     private boolean isDeleted;
     private boolean isLoggedIn;
@@ -32,9 +32,9 @@ public class UserEntity extends Auditable{
     @JoinColumn(name = "user_role")
     private UserRoleEntity userRoleEntity;
 
-    public UserEntity(String userName, String address, String password) {
+    public UserEntity(String userName, String email, String password) {
         this.userName = userName;
-        this.address = address;
+        this.email = email;
         this.password = password;
     }
 }

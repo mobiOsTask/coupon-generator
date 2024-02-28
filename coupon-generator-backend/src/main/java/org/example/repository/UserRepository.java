@@ -27,7 +27,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     void updateLogIn(@Param("userId") int userId);
 
     boolean existsByUserName(String userName);
-    boolean existsByAddress(String address);
+    boolean existsByEmail(String address);
 
     Optional<UserEntity> findByUserName(String userName);
 }

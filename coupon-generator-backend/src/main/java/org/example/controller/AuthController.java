@@ -1,8 +1,8 @@
 package org.example.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.dto.Request.ApiRequest;
 import org.example.dto.Request.RefreshTokenRequest;
+import org.example.dto.Request.SignInRequest;
 import org.example.dto.Request.SignUpRequest;
 import org.example.dto.Responses.JwtResponse;
 import org.example.dto.Responses.MessageResponse;
@@ -60,12 +60,12 @@ public class AuthController {
 
 
     @PostMapping("/sign-in")
-    public JwtResponse signIn(@RequestBody ApiRequest authRequest, HttpServletRequest request) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+    public JwtResponse signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(authRequest.getUserName());
+            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
             return JwtResponse.builder()
-                    .accessToken(jwtService.generateToken(authRequest.getUserName()))
+                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail()))
                     .token(refreshToken.getToken()).build();
         } else {
             throw new UsernameNotFoundException("invalid user request !");
@@ -78,7 +78,7 @@ public class AuthController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshTokenEntity::getUserEntity)
                 .map(userInfo -> {
-                    String accessToken = jwtService.generateToken(userInfo.getUserName());
+                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail());
                     return JwtResponse.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())
@@ -92,7 +92,7 @@ public class AuthController {
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
-        if (userRepository.existsByAddress(signUpRequest.getAddress())) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
         if(!adminRepository.existsById(signUpRequest.getAdminId())){
@@ -106,7 +106,7 @@ public class AuthController {
         if (adminEntity.isPresent()) {
             UserEntity userEntity = new UserEntity(
                     signUpRequest.getUserName(),
-                    signUpRequest.getAddress(),
+                    signUpRequest.getEmail(),
                     bCryptPasswordEncoder.encode(signUpRequest.getPassword())
             );
 

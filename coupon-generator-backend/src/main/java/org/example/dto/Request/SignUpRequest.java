@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpRequest {
     private String userName;
-    private String address;
+    private String email;
     private String roleName;
     private String password;
     private int adminId;

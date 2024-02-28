@@ -17,10 +17,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiRequest {
 
-    //SignIn
-    private String userName;
-    private String password;
-
     //filtering conditions
     String type;
     String displayValue;
