@@ -20,9 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
@@ -100,45 +98,42 @@ public class AuthController {
 
         Optional<AdminEntity> adminEntity = adminRepository.findById(signUpRequest.getAdminId());
 
-//        Set<String> strRoles = signUpRequest.getRole();
-//        Set<RolesEntity> roles = new HashSet<>();
-//
-//        if(strRoles == null){
-//            RolesEntity rolesEntity = roleRepository.findByName(ERole.ROLE_USER);
-//            roles.add(rolesEntity);
-//        } else {
-//            strRoles.forEach(role -> {
-//                switch (role) {
-//                    case "admin":
-//                        RolesEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN);
-//                        roles.add(adminRole);
-//                        break;
-//
-//                    case "user":
-//                        RolesEntity userRole = roleRepository.findByName(ERole.ROLE_USER);
-//                        roles.add(userRole);
-//                        break;
-//                }
-//            });
-//        }
-//
-//        Optional<UserRoleEntity> userRole = userRoleRepository.findById(1);
-//
-//        if(adminEntity.isPresent() && userRole.isPresent()){
-//            UserEntity userEntity =new UserEntity(signUpRequest.getUserName(), signUpRequest.getAddress(), bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
-//            userEntity.setCreatedAdmin(adminEntity.get());
-//            userEntity.setUserRoleEntity(userRole.get());
-//            userRepository.save(userEntity);
-//            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-//        } else {
-//            return ResponseEntity.ok(new MessageResponse("Admin or UserRole not found"));
-//        }
-//            userEntity.setUserRoleEntity(userRole.get());
+        RolesEntity rolesEntity = roleRepository.findByName(ERole.valueOf(signUpRequest.getRoleName()));
 
-        UserEntity userEntity =new UserEntity(signUpRequest.getUserName(), signUpRequest.getAddress(), bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
-        userEntity.setCreatedAdmin(adminEntity.get());
-        userRepository.save(userEntity);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        if (adminEntity.isPresent()) {
+            UserEntity userEntity = new UserEntity(
+                    signUpRequest.getUserName(),
+                    signUpRequest.getAddress(),
+                    bCryptPasswordEncoder.encode(signUpRequest.getPassword())
+            );
+
+            userEntity.setCreatedAdmin(adminEntity.get());
+
+            UserEntity savedUserEntity = userRepository.save(userEntity);
+
+            UserRoleEntity userRoleEntity = new UserRoleEntity();
+            userRoleEntity.setRoleEntity(rolesEntity);
+            userRoleEntity.setName("name");
+            userRoleEntity.setPosition("position");
+            userRoleEntity.setStatus("active");
+            userRoleEntity.setDescription("description");
+            userRoleEntity.setUserEntity(savedUserEntity);
+
+            userRoleRepository.save(userRoleEntity);
+
+            Optional<UserRoleEntity> userRole = userRoleRepository.findById(1);
+
+            if (userRole.isPresent()) {
+                savedUserEntity.setUserRoleEntity(userRole.get());
+                userRepository.save(savedUserEntity);
+
+                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            } else {
+                return ResponseEntity.badRequest().body(new MessageResponse("UserRoleEntity with ID 1 not found"));
+            }
+        } else {
+            return ResponseEntity.badRequest().body(new MessageResponse("Admin not found"));
+        }
     }
 
     @GetMapping("/signout")

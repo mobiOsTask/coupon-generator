@@ -26,9 +26,11 @@ public class UserRoleEntity extends Auditable{
     private String status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "userRoleEntity", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<UserEntity> userEntities;
+    @ManyToOne
+    private UserEntity userEntity;
 
-    @Transient
-    private List<Long> pageIdList;
+    @JsonIgnore
+    @ManyToOne
+    private RolesEntity roleEntity;
+
 }
