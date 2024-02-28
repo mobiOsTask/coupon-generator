@@ -1,6 +1,7 @@
-package org.example.dto;
+package org.example.dto.Responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.example.dto.Response;
 import org.example.entity.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ import java.util.List;
 @Setter
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse extends  Response{
+public class ApiResponse extends Response {
 
     Page<CouponEntity> couponList;
     Page<CouponUserEntity> couponUserList;

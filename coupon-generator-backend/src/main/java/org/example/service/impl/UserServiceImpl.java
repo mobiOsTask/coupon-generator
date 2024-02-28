@@ -1,10 +1,9 @@
 package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.entity.AdminEntity;
-import org.example.entity.CouponEntity;
 import org.example.entity.UserEntity;
 import org.example.repository.AdminRepository;
 import org.example.repository.CouponRepository;

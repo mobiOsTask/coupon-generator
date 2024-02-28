@@ -23,9 +23,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     UserRepository userRepository;
 
     @Override
-    public RefreshTokenEntity createRefreshToken(int userId){
+    public RefreshTokenEntity createRefreshToken(String userName){
         RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
-                .userEntity(userRepository.findById(userId).get())
+                .userEntity(userRepository.findByUserName(userName).get())
                 .token(UUID.randomUUID().toString())
                 .expiryDate(Instant.now().plus(1, ChronoUnit.HOURS))
                 .build();

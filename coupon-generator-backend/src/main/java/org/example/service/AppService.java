@@ -1,9 +1,7 @@
 package org.example.service;
 
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.AppDTO;
-
-import java.util.List;
 
 public interface AppService {
 

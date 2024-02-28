@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.RolesDTO;
 import org.example.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;

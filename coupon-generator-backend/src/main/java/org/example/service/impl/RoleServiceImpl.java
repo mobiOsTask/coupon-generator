@@ -1,6 +1,6 @@
 package org.example.service.impl;
 
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.RolesDTO;
 import org.example.entity.ERole;
 import org.example.entity.RolesEntity;

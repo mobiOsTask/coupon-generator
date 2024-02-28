@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.UserDTO;
 import org.example.service.UserService;
 import org.junit.jupiter.api.Test;

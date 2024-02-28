@@ -3,8 +3,8 @@ package org.example.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import org.example.dto.ApiRequest;
-import org.example.dto.ApiResponse;
+import org.example.dto.Request.ApiRequest;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.service.CouponService;

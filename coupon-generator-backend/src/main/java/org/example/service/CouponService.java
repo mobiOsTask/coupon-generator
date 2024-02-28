@@ -1,8 +1,8 @@
 package org.example.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.dto.ApiRequest;
-import org.example.dto.ApiResponse;
+import org.example.dto.Request.ApiRequest;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.CouponUserDTO;
 import org.example.dto.DTO;
 import org.example.entity.CouponEntity;

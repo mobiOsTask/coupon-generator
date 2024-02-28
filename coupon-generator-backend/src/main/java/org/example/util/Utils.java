@@ -1,7 +1,7 @@
 package org.example.util;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
-import org.example.dto.ApiRequest;
+import org.example.dto.Request.ApiRequest;
 import org.example.dto.LogicDTO;
 import org.example.dto.DTO;
 import org.example.entity.AppEntity;

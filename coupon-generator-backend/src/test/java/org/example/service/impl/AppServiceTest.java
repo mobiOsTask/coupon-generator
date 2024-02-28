@@ -1,6 +1,6 @@
 package org.example.service.impl;
 
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.AppDTO;
 import org.example.entity.AppEntity;
 import org.example.repository.AppRepository;

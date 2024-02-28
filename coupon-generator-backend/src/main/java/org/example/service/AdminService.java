@@ -1,7 +1,7 @@
 package org.example.service;
 
 import org.example.dto.AdminDTO;
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface AdminService {

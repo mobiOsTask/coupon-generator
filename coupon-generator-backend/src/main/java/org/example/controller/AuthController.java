@@ -1,11 +1,12 @@
 package org.example.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.dto.ApiRequest;
+import org.example.dto.Request.ApiRequest;
+import org.example.dto.Request.RefreshTokenRequest;
 import org.example.dto.Request.SignUpRequest;
+import org.example.dto.Responses.JwtResponse;
 import org.example.dto.Responses.MessageResponse;
 import org.example.entity.*;
-import org.example.exception.TokenRefreshException;
 import org.example.repository.AdminRepository;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
@@ -57,52 +58,33 @@ public class AuthController {
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-//    @PostMapping("/token")
-//    public String token(Authentication authentication) {
-//        return tokenService.generateToken(authentication);
-//    }
 
     @PostMapping("/sign-in")
-    public String signIn(@RequestBody ApiRequest authRequest,HttpServletRequest request) {
+    public JwtResponse signIn(@RequestBody ApiRequest authRequest, HttpServletRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUserName(),request);
+            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(authRequest.getUserName());
+            return JwtResponse.builder()
+                    .accessToken(jwtService.generateToken(authRequest.getUserName()))
+                    .token(refreshToken.getToken()).build();
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
-
-
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<MessageResponse> refreshToken(HttpServletRequest request){
-        System.out.println(request);
-        String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
-        String jwt =jwtUtils.getJwtFromCookies(request);
-
-        boolean validateBrowser = jwtUtils.validateBrowserDetails(jwt, request.getRemoteAddr(), request.getHeader("user-agent"));
-
-        if((refreshToken != null) && (refreshToken.isEmpty())){
-            return refreshTokenService.findByToken(refreshToken)
-                    .map(refreshTokenService::verifyExpiration)
-                    .map(RefreshTokenEntity::getUserEntity)
-                    .map(userEntity -> {
-                        if(validateBrowser){
-                            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userEntity, request.getRemoteAddr(), request.getHeader("user-agent"));
-//                            String jwtToken = (jwtCookie.toString().split("=")[1]).split(";")[0];
-                            String jwtToken = jwtService.generateToken(userEntity.getUserName(),request);
-                            return ResponseEntity.ok()
-                                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                                    .body(new MessageResponse("Token is refreshed successfully!"));
-                        }
-                        return ResponseEntity.badRequest()
-                                .body(new MessageResponse("Invalid Source"));
-                    })
-                    .orElseThrow(() -> new TokenRefreshException(refreshToken,
-                            "Refresh token is not in database!"));
-        }
-        return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is Empty!"));
+    public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+        return refreshTokenService.findByToken(refreshTokenRequest.getToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshTokenEntity::getUserEntity)
+                .map(userInfo -> {
+                    String accessToken = jwtService.generateToken(userInfo.getUserName());
+                    return JwtResponse.builder()
+                            .accessToken(accessToken)
+                            .token(refreshTokenRequest.getToken())
+                            .build();
+                }).orElseThrow(() -> new RuntimeException(
+                        "Refresh token is not in database!"));
     }
 
     @PostMapping("/signup")

@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.dto.AdminDTO;
-import org.example.dto.ApiResponse;
+import org.example.dto.Responses.ApiResponse;
 import org.example.entity.AdminEntity;
 import org.example.repository.AdminRepository;
 import org.example.service.AdminService;
