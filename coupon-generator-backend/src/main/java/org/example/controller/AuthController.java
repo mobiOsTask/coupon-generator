@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.dto.ApiRequest;
 import org.example.dto.Request.SignUpRequest;
 import org.example.dto.Responses.MessageResponse;
 import org.example.entity.*;
@@ -10,13 +11,16 @@ import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserRoleRepository;
 import org.example.service.RefreshTokenService;
-import org.example.service.TokenService;
+import org.example.service.impl.JwtService;
 import org.example.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +30,6 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    TokenService tokenService;
 
     @Autowired
     RefreshTokenService refreshTokenService;
@@ -47,15 +49,34 @@ public class AuthController {
     @Autowired
     private JWTUtils jwtUtils;
 
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-    @PostMapping("/token")
-    public String token(Authentication authentication) {
-        return tokenService.generateToken(authentication);
+//    @PostMapping("/token")
+//    public String token(Authentication authentication) {
+//        return tokenService.generateToken(authentication);
+//    }
+
+    @PostMapping("/sign-in")
+    public String signIn(@RequestBody ApiRequest authRequest,HttpServletRequest request) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(authRequest.getUserName(),request);
+        } else {
+            throw new UsernameNotFoundException("invalid user request !");
+        }
+
+
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<MessageResponse> refreshToken(HttpServletRequest request){
+        System.out.println(request);
         String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
         String jwt =jwtUtils.getJwtFromCookies(request);
 
@@ -69,7 +90,7 @@ public class AuthController {
                         if(validateBrowser){
                             ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userEntity, request.getRemoteAddr(), request.getHeader("user-agent"));
 //                            String jwtToken = (jwtCookie.toString().split("=")[1]).split(";")[0];
-                            String jwtToken = tokenService.generateTokenForUser(userEntity);
+                            String jwtToken = jwtService.generateToken(userEntity.getUserName(),request);
                             return ResponseEntity.ok()
                                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
