@@ -12,4 +12,10 @@ public class AdminDTO {
     private String name;
     private String password;
     private String address;
+
+    public AdminDTO(String name, String password, String address) {
+        this.name = name;
+        this.password = password;
+        this.address = address;
+    }
 }

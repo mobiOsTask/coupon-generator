@@ -33,7 +33,7 @@ public class AdminServiceImpl implements AdminService {
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public ApiResponse addAdmin(AdminDTO adminDTO) {
+    public ApiResponse signUpAdmin(AdminDTO adminDTO) {
         AdminEntity adminEntity = modelMapper.map(adminDTO, AdminEntity.class);
 
         String encryptedPassword = bCryptPasswordEncoder.encode(adminDTO.getPassword());
@@ -83,5 +83,15 @@ public class AdminServiceImpl implements AdminService {
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.ADMIN_LOG_IN_FAILED, null));
         }
         return apiResponse;
+    }
+
+    @Override
+    public boolean isExistByName(String name) {
+        return adminRepository.existsByName(name);
+    }
+
+    @Override
+    public boolean isExistByEmail(String address) {
+        return adminRepository.existsByAddress(address);
     }
 }

@@ -56,9 +56,6 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
-
     @PostMapping("/sign-in")
     public JwtResponse signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
@@ -73,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+    public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenService.findByToken(refreshTokenRequest.getToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshTokenEntity::getUserEntity)
@@ -87,60 +84,8 @@ public class AuthController {
                         "Refresh token is not in database!"));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest){
-        if (userRepository.existsByUserName(signUpRequest.getUserName())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-        if(!adminRepository.existsById(signUpRequest.getAdminId())){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Admin not found!"));
-        }
-
-        Optional<AdminEntity> adminEntity = adminRepository.findById(signUpRequest.getAdminId());
-
-        RolesEntity rolesEntity = roleRepository.findByName(ERole.valueOf(signUpRequest.getRoleName()));
-
-        if (adminEntity.isPresent()) {
-            UserEntity userEntity = new UserEntity(
-                    signUpRequest.getUserName(),
-                    signUpRequest.getEmail(),
-                    bCryptPasswordEncoder.encode(signUpRequest.getPassword())
-            );
-
-            userEntity.setCreatedAdmin(adminEntity.get());
-
-            UserEntity savedUserEntity = userRepository.save(userEntity);
-
-            UserRoleEntity userRoleEntity = new UserRoleEntity();
-            userRoleEntity.setRoleEntity(rolesEntity);
-            userRoleEntity.setName("name");
-            userRoleEntity.setPosition("position");
-            userRoleEntity.setStatus("active");
-            userRoleEntity.setDescription("description");
-            userRoleEntity.setUserEntity(savedUserEntity);
-
-            userRoleRepository.save(userRoleEntity);
-
-            Optional<UserRoleEntity> userRole = userRoleRepository.findById(1);
-
-            if (userRole.isPresent()) {
-                savedUserEntity.setUserRoleEntity(userRole.get());
-                userRepository.save(savedUserEntity);
-
-                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-            } else {
-                return ResponseEntity.badRequest().body(new MessageResponse("UserRoleEntity with ID 1 not found"));
-            }
-        } else {
-            return ResponseEntity.badRequest().body(new MessageResponse("Admin not found"));
-        }
-    }
-
     @GetMapping("/signout")
-    public ResponseEntity<MessageResponse> logOutUser(HttpServletRequest request){
+    public ResponseEntity<MessageResponse> logOutUser(HttpServletRequest request) {
         String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
         refreshTokenService.deleteRefreshToken(refreshToken);
 

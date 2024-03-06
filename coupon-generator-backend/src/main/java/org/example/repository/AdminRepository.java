@@ -16,4 +16,8 @@ public interface AdminRepository extends JpaRepository<AdminEntity, Integer> {
     @Modifying
     @Query("UPDATE AdminEntity a SET a.isLogIn = true WHERE a.adminId =:adminId")
     void updateLogIn(@Param("adminId") int adminId);
+
+    boolean existsByName(String userName);
+    boolean existsByAddress(String address);
+
 }

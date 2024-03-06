@@ -11,6 +11,8 @@ import org.example.util.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -34,6 +36,18 @@ public class RoleServiceImpl implements RoleService {
             apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
         }
+
+        return apiResponse;
+    }
+
+    @Override
+    public ApiResponse getRoles() {
+        List<RolesEntity> rolesEntityList = roleRepository.findAll();
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setRoleList(rolesEntityList);
+        apiResponse.setResponseCode(ResponseCodes.SUCCESS);
+        apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
 
         return apiResponse;
     }

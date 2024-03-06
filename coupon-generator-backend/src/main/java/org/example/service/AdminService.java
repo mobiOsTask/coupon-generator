@@ -5,7 +5,9 @@ import org.example.dto.Responses.ApiResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface AdminService {
-    ApiResponse addAdmin(AdminDTO adminDTO);
+    ApiResponse signUpAdmin(AdminDTO adminDTO);
     ApiResponse getAdmins(Pageable pageable);
     ApiResponse adminLogIn(String name, String password);
+    boolean isExistByName(String name);
+    boolean isExistByEmail(String address);
 }
