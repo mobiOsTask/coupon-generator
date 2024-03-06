@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.dto.Request.SignUpRequest;
 import org.example.dto.Responses.ApiResponse;
 import org.example.dto.Responses.MessageResponse;
@@ -9,8 +10,12 @@ import org.example.repository.AdminRepository;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserRoleRepository;
+import org.example.service.RefreshTokenService;
 import org.example.service.UserService;
+import org.example.util.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +36,19 @@ public class UserController {
     @Autowired
     UserRoleRepository userRoleRepository;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     AdminRepository adminRepository;
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    private JWTUtils jwtUtils;
+
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
     @PostMapping("/")
     public ApiResponse addUser(@RequestBody UserDTO userDTO, @RequestParam("adminId") int adminId){
@@ -68,7 +79,7 @@ public class UserController {
         return userService.userLogin(name, password);
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
     public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
@@ -120,4 +131,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("/sign-out")
+    public ResponseEntity<MessageResponse> logOutUser(HttpServletRequest request) {
+        String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
+        refreshTokenService.deleteRefreshToken(refreshToken);
+
+        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
+        ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+                .body(new MessageResponse("You've been signed out!"));
+    }
 }
