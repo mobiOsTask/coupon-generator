@@ -14,16 +14,16 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class customAdminDetailServiceImpl implements UserDetailsService {
+public class customUserDetailServiceImpl implements UserDetailsService {
 
     @Autowired
-    private AdminRepository repository;
+    private UserRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AdminEntity> userInfo = repository.findByUserName(username);
-        return userInfo.map(customAdminDetail::new)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found " + username));
-
+        Optional<UserEntity> userInfo = repository.findByUserName(username);
+        return userInfo.map(customUserDetail::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found " + username));
     }
+
 }
