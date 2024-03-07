@@ -1,9 +1,11 @@
 package org.example.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.dto.AdminDTO;
 import org.example.dto.Request.RefreshTokenRequest;
 import org.example.dto.Request.SignInRequest;
 import org.example.dto.Request.SignUpRequest;
+import org.example.dto.Responses.ApiResponse;
 import org.example.dto.Responses.JwtResponse;
 import org.example.dto.Responses.MessageResponse;
 import org.example.entity.*;
@@ -11,9 +13,12 @@ import org.example.repository.AdminRepository;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserRoleRepository;
+import org.example.service.AdminService;
 import org.example.service.RefreshTokenService;
 import org.example.service.impl.JwtService;
 import org.example.util.JWTUtils;
+import org.example.util.RequestStatus;
+import org.example.util.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -56,6 +61,9 @@ public class AuthController {
 
     @Autowired
     private JWTUtils jwtUtils;
+
+    @Autowired
+    AdminService adminService;
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -137,6 +145,26 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body(new MessageResponse("Admin not found"));
         }
+    }
+
+    @PostMapping("/admin/sign-up")
+    public ApiResponse registerAdmin(@RequestBody SignUpRequest signUpRequest){
+        if(adminService.isExistByName(signUpRequest.getUserName())){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setMessage("User Name is Already taken!");
+            return apiResponse;
+        }if(adminService.isExistByEmail(signUpRequest.getEmail())){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setMessage("Email is already in use!");
+            return apiResponse;
+        }
+        AdminDTO adminDTO = new AdminDTO(signUpRequest.getUserName(), signUpRequest.getPassword(), signUpRequest.getEmail());
+
+        return adminService.signUpAdmin(adminDTO);
     }
 
     @GetMapping("/sign-out")
