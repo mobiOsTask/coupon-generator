@@ -156,6 +156,7 @@ public class CouponServiceImpl implements CouponService {
             couponUserEntity.setBrowserId(request.getHeader("User-Agent"));
 
             if (userEntity.isPresent()) {
+                couponUserEntity.setUser(userEntity.get());
                 // change isValid if usage count == 1
                 if (couponEntity.getLogicEntity().getUsageCount() == 1) {
                     couponRepository.updateCouponValidity(number);

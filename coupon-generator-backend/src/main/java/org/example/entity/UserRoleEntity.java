@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "user_roles")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString(exclude = {"userEntity", "roleEntity"})
 public class UserRoleEntity extends Auditable{
 
     @Id

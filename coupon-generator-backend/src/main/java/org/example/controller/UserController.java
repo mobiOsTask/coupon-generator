@@ -36,16 +36,11 @@ public class UserController {
     @Autowired
     UserRoleRepository userRoleRepository;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
     @Autowired
     AdminRepository adminRepository;
 
     @Autowired
     RoleRepository roleRepository;
-
-    @Autowired
-    private JWTUtils jwtUtils;
 
     @Autowired
     RefreshTokenService refreshTokenService;
@@ -77,71 +72,5 @@ public class UserController {
     @PostMapping("/log-in")
     public ApiResponse adminLogIn(@RequestParam(name = "name") String name, @RequestParam(name = "password") String password){
         return userService.userLogin(name, password);
-    }
-
-    @PostMapping("/sign-up")
-    public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest) {
-        if (userRepository.existsByUserName(signUpRequest.getUserName())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-        if (!adminRepository.existsById(signUpRequest.getAdminId())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Admin not found!"));
-        }
-
-        Optional<AdminEntity> adminEntity = adminRepository.findById(signUpRequest.getAdminId());
-
-        RolesEntity rolesEntity = roleRepository.findByName(ERole.valueOf(signUpRequest.getRoleName()));
-
-        if (adminEntity.isPresent()) {
-            UserEntity userEntity = new UserEntity(
-                    signUpRequest.getUserName(),
-                    signUpRequest.getEmail(),
-                    bCryptPasswordEncoder.encode(signUpRequest.getPassword())
-            );
-
-            userEntity.setCreatedAdmin(adminEntity.get());
-
-            UserEntity savedUserEntity = userRepository.save(userEntity);
-
-            UserRoleEntity userRoleEntity = new UserRoleEntity();
-            userRoleEntity.setRoleEntity(rolesEntity);
-            userRoleEntity.setName("name");
-            userRoleEntity.setPosition("position");
-            userRoleEntity.setStatus("active");
-            userRoleEntity.setDescription("description");
-            userRoleEntity.setUserEntity(savedUserEntity);
-
-            userRoleRepository.save(userRoleEntity);
-
-            Optional<UserRoleEntity> userRole = userRoleRepository.findById(1);
-
-            if (userRole.isPresent()) {
-                savedUserEntity.setUserRoleEntity(userRole.get());
-                userRepository.save(savedUserEntity);
-
-                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-            } else {
-                return ResponseEntity.badRequest().body(new MessageResponse("UserRoleEntity with ID 1 not found"));
-            }
-        } else {
-            return ResponseEntity.badRequest().body(new MessageResponse("Admin not found"));
-        }
-    }
-
-    @GetMapping("/sign-out")
-    public ResponseEntity<MessageResponse> logOutUser(HttpServletRequest request) {
-        String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
-        refreshTokenService.deleteRefreshToken(refreshToken);
-
-        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
-        ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(new MessageResponse("You've been signed out!"));
     }
 }
