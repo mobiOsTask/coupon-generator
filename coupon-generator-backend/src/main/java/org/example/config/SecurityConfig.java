@@ -1,7 +1,9 @@
 package org.example.config;
 
 
+import org.example.exception.DLAppValidationsException;
 import org.example.filter.JwtAuthFilter;
+import org.example.util.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,7 @@ public class SecurityConfig {
     @Bean
     //authentication
     public UserDetailsService userDetailsService() {
-        return new UserInfoUserDetailsService();
+        return new customUserDetailServiceImpl();
     }
 
 
@@ -64,8 +66,12 @@ public class SecurityConfig {
         return authenticationProvider;
     }
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+        try {
+            return config.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new DLAppValidationsException(ResponseCodes.UNAUTHORIZED, "Invalid credentials");
+        }
     }
 
 }

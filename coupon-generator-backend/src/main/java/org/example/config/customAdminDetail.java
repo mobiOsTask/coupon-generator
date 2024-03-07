@@ -1,25 +1,23 @@
 package org.example.config;
 
 
+import org.example.entity.AdminEntity;
 import org.example.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class UserInfoUserDetails implements UserDetails {
+public class customAdminDetail implements UserDetails {
 
 
     private String name;
     private String password;
-    private String authorities;
 
-    public UserInfoUserDetails(UserEntity userInfo) {
-        name=userInfo.getUserName();
-        password=userInfo.getPassword();
-        authorities= userInfo.getUserRoleEntity().getRoleEntity().getName().name();
+
+    public customAdminDetail(AdminEntity adminInfo) {
+        name=adminInfo.getUserName();
+        password=adminInfo.getPassword();
     }
 
     @Override

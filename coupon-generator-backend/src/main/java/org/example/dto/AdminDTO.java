@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminDTO {
     private int adminId;
-    private String name;
+    private String userName;
     private String password;
-    private String address;
+    private String email;
 
     public AdminDTO(String name, String password, String address) {
-        this.name = name;
+        this.userName = name;
         this.password = password;
-        this.address = address;
+        this.email = address;
     }
+
 }

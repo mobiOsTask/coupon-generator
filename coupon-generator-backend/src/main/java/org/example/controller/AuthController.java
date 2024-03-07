@@ -67,18 +67,31 @@ public class AuthController {
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-    @PostMapping("/sign-in")
-    public JwtResponse signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+    @PostMapping("/user/sign-in")
+    public JwtResponse userSignIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
         if (authentication.isAuthenticated()) {
             RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
             return JwtResponse.builder()
-                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail()))
+                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail(),signInRequest.getRole()))
                     .token(refreshToken.getToken()).build();
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
     }
+
+//    @PostMapping("/admin/sign-in")
+//    public JwtResponse adminSignIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
+//        if (authentication.isAuthenticated()) {
+//            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
+//            return JwtResponse.builder()
+//                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail(),signInRequest.getRole()))
+//                    .token(refreshToken.getToken()).build();
+//        } else {
+//            throw new UsernameNotFoundException("invalid user request !");
+//        }
+//    }
 
     @PostMapping("/refresh-token")
     public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
@@ -86,7 +99,7 @@ public class AuthController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshTokenEntity::getUserEntity)
                 .map(userInfo -> {
-                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail());
+                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail(),userInfo.getUserRoleEntity().getName());
                     return JwtResponse.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())

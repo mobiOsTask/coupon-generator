@@ -14,8 +14,8 @@ public class AdminEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminId;
-    private String name;
+    private String userName;
     private String password;
-    private String address;
+    private String email;
     private boolean isLogIn;
 }

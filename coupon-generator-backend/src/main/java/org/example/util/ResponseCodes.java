@@ -4,6 +4,7 @@ public class ResponseCodes {
 
     public static final String INTERNAL_SERVER_ERROR_CODE = "500";
     public static final String BAD_REQUEST_CODE = "400";
+    public static final String UNAUTHORIZED = "400";
     public static final String NOT_FOUND = "404";
 
     public static final String SUCCESS = "200";

@@ -87,11 +87,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public boolean isExistByName(String name) {
-        return adminRepository.existsByName(name);
+        return adminRepository.existsByUserName(name);
     }
 
     @Override
-    public boolean isExistByEmail(String address) {
-        return adminRepository.existsByAddress(address);
+    public boolean isExistByEmail(String email) {
+        return adminRepository.existsByEmail(email);
     }
 }
