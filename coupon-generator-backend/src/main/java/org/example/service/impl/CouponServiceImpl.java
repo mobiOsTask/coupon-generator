@@ -42,10 +42,8 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     CouponRepository couponRepository;
 
-
     @Autowired
     AppRepository appRepository;
-
 
     @Autowired
     CouponUserRepository couponUserRepository;
@@ -126,14 +124,16 @@ public class CouponServiceImpl implements CouponService {
         ApiResponse apiResponse = new ApiResponse();
 
         // check the coupon can use or not
-        if ((couponEntity != null) && (couponEntity.getLogicEntity().getUsageCount() == 0 || (couponEntity.getLogicEntity().getUsageCount() == 1 && couponEntity.getIsRedeemable()) || couponEntity.getLogicEntity().getUsageCount() > 1) && isValidDate(couponEntity)) {
+        if ((couponEntity != null) && (couponEntity.getLogicEntity().getUsageCount() == 0 || (couponEntity.getUsageCount() == 1 && couponEntity.getIsRedeemable()) || couponEntity.getUsageCount() > 1) && isValidDate(couponEntity)) {
             apiResponse.setResponseCode(ResponseCodes.SUCCESS);
             apiResponse.setStatusCode(RequestStatus.SUCCESS.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CAN_USE, null));
+            apiResponse.setCouponEntity(couponEntity);
         } else {
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.CANNOT_USE, null));
+            apiResponse.setCouponEntity(couponEntity);
         }
         logger.info("Check coupon ends");
         return apiResponse;
@@ -159,7 +159,7 @@ public class CouponServiceImpl implements CouponService {
                 couponUserEntity.setUser(userEntity.get());
                 // change isValid if usage count == 1
                 if (couponEntity.getLogicEntity().getUsageCount() == 1) {
-                    couponRepository.updateCouponValidity(number);
+                    couponRepository.updateCouponValidity(couponEntity.getNumber());
                     // change coupon usage
                 } else if (couponEntity.getLogicEntity().getUsageCount() > 1) {
                     changeCouponUsageCount(number);
@@ -168,10 +168,12 @@ public class CouponServiceImpl implements CouponService {
                 apiResponse.setResponseCode(ResponseCodes.SUCCESS);
                 apiResponse.setStatus(RequestStatus.SUCCESS.getStatusMessage());
                 apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USE_SUCCESS, null));
+                apiResponse.setCouponUserEntity(couponUserEntity);
             } else {
                 apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
                 apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
                 apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USE_FAILED_USER_NOT_FOUND, null));
+                apiResponse.setCouponUserEntity(couponUserEntity);
             }
         } else {
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
