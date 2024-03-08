@@ -8,15 +8,16 @@ import org.example.dto.Request.SignUpRequest;
 import org.example.dto.Responses.ApiResponse;
 import org.example.dto.Responses.JwtResponse;
 import org.example.dto.Responses.MessageResponse;
+import org.example.dto.UserDTO;
 import org.example.entity.*;
 import org.example.repository.AdminRepository;
-import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
-import org.example.repository.UserRoleRepository;
 import org.example.service.AdminService;
 import org.example.service.RefreshTokenService;
+import org.example.service.UserService;
 import org.example.service.impl.JwtService;
 import org.example.util.JWTUtils;
+import org.example.util.Messages;
 import org.example.util.RequestStatus;
 import org.example.util.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 
 @RestController
@@ -45,13 +43,7 @@ public class AuthController {
     UserRepository userRepository;
 
     @Autowired
-    UserRoleRepository userRoleRepository;
-
-    @Autowired
     AdminRepository adminRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
 
     @Autowired
     private JwtService jwtService;
@@ -65,7 +57,11 @@ public class AuthController {
     @Autowired
     AdminService adminService;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    Messages messages;
 
     @PostMapping("/user/sign-in")
     public JwtResponse userSignIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
@@ -73,7 +69,7 @@ public class AuthController {
         if (authentication.isAuthenticated()) {
             RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
             return JwtResponse.builder()
-                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail(),signInRequest.getRole()))
+                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail()))
                     .token(refreshToken.getToken()).build();
         } else {
             throw new UsernameNotFoundException("invalid user request !");
@@ -99,7 +95,7 @@ public class AuthController {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshTokenEntity::getUserEntity)
                 .map(userInfo -> {
-                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail(),userInfo.getUserRoleEntity().getName());
+                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail());
                     return JwtResponse.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())
@@ -109,55 +105,24 @@ public class AuthController {
     }
 
     @PostMapping("/user/sign-up")
-    public ResponseEntity<MessageResponse> registerUser(@RequestBody SignUpRequest signUpRequest) {
+    public ApiResponse registerUser(@RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUserName(signUpRequest.getUserName())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_NAME_TAKEN, null));
+            return apiResponse;
         }
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setStatus(RequestStatus.BAD_REQUEST.getStatusMessage());
+            apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.EMAIL_IN_USE, null));
+            return apiResponse;
         }
-        if (!adminRepository.existsById(signUpRequest.getAdminId())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Admin not found!"));
-        }
+        UserDTO userDTO = new UserDTO(signUpRequest.getUserName(), signUpRequest.getEmail(), signUpRequest.getPassword());
 
-        Optional<AdminEntity> adminEntity = adminRepository.findById(signUpRequest.getAdminId());
-
-        RolesEntity rolesEntity = roleRepository.findByName(ERole.valueOf(signUpRequest.getRoleName()));
-
-        if (adminEntity.isPresent()) {
-            UserEntity userEntity = new UserEntity(
-                    signUpRequest.getUserName(),
-                    signUpRequest.getEmail(),
-                    bCryptPasswordEncoder.encode(signUpRequest.getPassword())
-            );
-
-            userEntity.setCreatedAdmin(adminEntity.get());
-
-            UserEntity savedUserEntity = userRepository.save(userEntity);
-
-            UserRoleEntity userRoleEntity = new UserRoleEntity();
-            userRoleEntity.setRoleEntity(rolesEntity);
-            userRoleEntity.setName("name");
-            userRoleEntity.setPosition("position");
-            userRoleEntity.setStatus("active");
-            userRoleEntity.setDescription("description");
-            userRoleEntity.setUserEntity(savedUserEntity);
-
-            userRoleRepository.save(userRoleEntity);
-
-            Optional<UserRoleEntity> userRole = userRoleRepository.findById(1);
-
-            if (userRole.isPresent()) {
-                savedUserEntity.setUserRoleEntity(userRole.get());
-                userRepository.save(savedUserEntity);
-
-                return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-            } else {
-                return ResponseEntity.badRequest().body(new MessageResponse("UserRoleEntity with ID 1 not found"));
-            }
-        } else {
-            return ResponseEntity.badRequest().body(new MessageResponse("Admin not found"));
-        }
+        return userService.signUpUser(userDTO, signUpRequest.getAdminId());
     }
 
     @PostMapping("/admin/sign-up")
@@ -166,13 +131,14 @@ public class AuthController {
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
-            apiResponse.setMessage("User Name is Already taken!");
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_NAME_TAKEN, null));
             return apiResponse;
-        }if(adminService.isExistByEmail(signUpRequest.getEmail())){
+        }
+        if(adminService.isExistByEmail(signUpRequest.getEmail())){
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
-            apiResponse.setMessage("Email is already in use!");
+            apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.EMAIL_IN_USE, null));
             return apiResponse;
         }
         AdminDTO adminDTO = new AdminDTO(signUpRequest.getUserName(), signUpRequest.getPassword(), signUpRequest.getEmail());
@@ -191,6 +157,6 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(new MessageResponse("You've been signed out!"));
+                .body(new MessageResponse(messages.getMessageForResponseCode(ResponseCodes.USER_SIGNED_OUT, null)));
     }
 }

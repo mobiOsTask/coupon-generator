@@ -4,7 +4,7 @@ import org.example.dto.Responses.ApiResponse;
 import org.example.dto.UserDTO;
 
 public interface UserService {
-    ApiResponse addUser(UserDTO userDTO, int adminId);
+    ApiResponse signUpUser(UserDTO userDTO, int adminId);
     ApiResponse getUsers();
     ApiResponse getUserById(int userId);
     ApiResponse deleteUser(int userId);

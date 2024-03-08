@@ -28,10 +28,6 @@ public class UserEntity extends Auditable{
     @JoinColumn(name = "admin_id")
     private AdminEntity createdAdmin;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_role")
-    private UserRoleEntity userRoleEntity;
-
     public UserEntity(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;

@@ -74,6 +74,12 @@ public class ResponseCodes {
 
     public static final String USER_LOG_IN_FALIED = "10007";
 
+    public static final String USER_NAME_TAKEN = "10008";
+
+    public static final String EMAIL_IN_USE = "10009";
+
+    public static final String USER_SIGNED_OUT = "10010";
+
     public static final String ADMIN_CREATED = "11000";
 
     public static final String ADMIN_LOG_IN = "11004";

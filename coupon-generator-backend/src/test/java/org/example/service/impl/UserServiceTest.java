@@ -49,7 +49,7 @@ class UserServiceTest {
         when(modelMapper.map(userDTO, UserEntity.class)).thenReturn(userEntity);
         when(userRepository.save(any())).thenReturn(userEntity);
 
-        ApiResponse apiResponse = userService.addUser(userDTO, adminId);
+        ApiResponse apiResponse = userService.signUpUser(userDTO, adminId);
 
         assertNotNull(apiResponse);
         assertEquals(ResponseCodes.SUCCESS, apiResponse.getResponseCode());

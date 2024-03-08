@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public ApiResponse addUser(UserDTO userDTO, int adminId) {
+    public ApiResponse signUpUser(UserDTO userDTO, int adminId) {
         logger.info("Add User Starts");
         ApiResponse apiResponse = new ApiResponse();
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);

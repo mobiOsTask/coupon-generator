@@ -63,7 +63,6 @@ public class CouponServiceImpl implements CouponService {
     @Autowired
     Messages messages;
 
-
     @Autowired
     CouponStorageService couponStorageService;
 
@@ -158,10 +157,10 @@ public class CouponServiceImpl implements CouponService {
             if (userEntity.isPresent()) {
                 couponUserEntity.setUser(userEntity.get());
                 // change isValid if usage count == 1
-                if (couponEntity.getLogicEntity().getUsageCount() == 1) {
+                if (couponEntity.getUsageCount() == 1) {
                     couponRepository.updateCouponValidity(couponEntity.getNumber());
-                    // change coupon usage
-                } else if (couponEntity.getLogicEntity().getUsageCount() > 1) {
+                // change coupon usage
+                } else if (couponEntity.getUsageCount() > 1) {
                     changeCouponUsageCount(number);
                 }
                 couponUserRepository.save(couponUserEntity);
