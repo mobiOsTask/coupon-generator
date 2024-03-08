@@ -69,6 +69,19 @@ public class AuthController {
         if (authentication.isAuthenticated()) {
             RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
             return JwtResponse.builder()
+                    .accessToken(jwtService.generateToken(signInRequest.getUserName(), signInRequest.getEmail()))
+                    .token(refreshToken.getToken()).build();
+        } else {
+            throw new UsernameNotFoundException("invalid user request !");
+        }
+    }
+
+    @PostMapping("/admin/sign-in")
+    public JwtResponse adminSignIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
+            return JwtResponse.builder()
                     .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail()))
                     .token(refreshToken.getToken()).build();
         } else {
@@ -76,26 +89,13 @@ public class AuthController {
         }
     }
 
-//    @PostMapping("/admin/sign-in")
-//    public JwtResponse adminSignIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
-//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUserName(), signInRequest.getPassword()));
-//        if (authentication.isAuthenticated()) {
-//            RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(signInRequest.getUserName());
-//            return JwtResponse.builder()
-//                    .accessToken(jwtService.generateToken(signInRequest.getUserName(),signInRequest.getEmail(),signInRequest.getRole()))
-//                    .token(refreshToken.getToken()).build();
-//        } else {
-//            throw new UsernameNotFoundException("invalid user request !");
-//        }
-//    }
-
     @PostMapping("/refresh-token")
     public JwtResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         return refreshTokenService.findByToken(refreshTokenRequest.getToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshTokenEntity::getUserEntity)
                 .map(userInfo -> {
-                    String accessToken = jwtService.generateToken(userInfo.getUserName(),userInfo.getEmail());
+                    String accessToken = jwtService.generateToken(userInfo.getUserName(), userInfo.getEmail());
                     return JwtResponse.builder()
                             .accessToken(accessToken)
                             .token(refreshTokenRequest.getToken())
@@ -126,15 +126,15 @@ public class AuthController {
     }
 
     @PostMapping("/admin/sign-up")
-    public ApiResponse registerAdmin(@RequestBody SignUpRequest signUpRequest){
-        if(adminService.isExistByName(signUpRequest.getUserName())){
+    public ApiResponse registerAdmin(@RequestBody SignUpRequest signUpRequest) {
+        if (adminService.isExistByName(signUpRequest.getUserName())) {
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);
             apiResponse.setMessage(messages.getMessageForResponseCode(ResponseCodes.USER_NAME_TAKEN, null));
             return apiResponse;
         }
-        if(adminService.isExistByEmail(signUpRequest.getEmail())){
+        if (adminService.isExistByEmail(signUpRequest.getEmail())) {
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setStatusCode(RequestStatus.BAD_REQUEST.getStatusCode());
             apiResponse.setResponseCode(ResponseCodes.BAD_REQUEST_CODE);

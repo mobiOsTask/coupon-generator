@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.util.ParentUser;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "admin")
-public class AdminEntity extends Auditable{
+public class AdminEntity extends Auditable implements ParentUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminId;
@@ -18,4 +19,6 @@ public class AdminEntity extends Auditable{
     private String password;
     private String email;
     private boolean isLogIn;
+
+
 }

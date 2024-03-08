@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.util.ParentUser;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
         @UniqueConstraint(columnNames = "user_name"),
         @UniqueConstraint(columnNames = "email")
 })
-public class UserEntity extends Auditable{
+public class UserEntity extends Auditable implements ParentUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;

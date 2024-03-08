@@ -24,4 +24,8 @@ public class RefreshTokenEntity {
     @OneToOne
     @JoinColumn(name = "userId")
     private UserEntity userEntity;
+
+    @OneToOne
+    @JoinColumn(name = "adminId")
+    private AdminEntity adminEntity;
 }

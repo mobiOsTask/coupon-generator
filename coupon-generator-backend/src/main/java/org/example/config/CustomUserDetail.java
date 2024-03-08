@@ -2,19 +2,21 @@ package org.example.config;
 
 
 import org.example.entity.UserEntity;
+import org.example.util.ParentUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class customUserDetail implements UserDetails {
+public class CustomUserDetail implements UserDetails {
 
 
     private String name;
     private String password;
 
 
-    public customUserDetail(UserEntity userInfo) {
+
+    public CustomUserDetail(ParentUser userInfo) {
         name=userInfo.getUserName();
         password=userInfo.getPassword();
     }

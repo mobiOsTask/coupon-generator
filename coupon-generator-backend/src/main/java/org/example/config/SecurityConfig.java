@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Bean
     //authentication
     public UserDetailsService userDetailsService() {
-        return new customUserDetailServiceImpl();
+        return new CustomUserDetailsServiceImpl();
     }
 
 
