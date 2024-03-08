@@ -27,11 +27,15 @@ public class ExceptionControllerAdvice {
 		ErrorResponse error = new ErrorResponse();
 		if(ex.getCode() != null) {
 			error.setResponseCode(ex.getCode());
+			System.out.println(ex.getCode());
 		}else {
 			error.setResponseCode(String.valueOf(HttpStatus.BAD_REQUEST.value()));
 		}
 		error.setMessage(messages.getInvalidDataValidationFailureMessage(ex.getMessage()));
 		error.setStatus(ex.getStatus());
+		if (ex.getCode().equals("401")){
+			return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+		}
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 

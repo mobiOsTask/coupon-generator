@@ -2,15 +2,18 @@ package org.example.config;
 
 import org.example.entity.AdminEntity;
 import org.example.entity.UserEntity;
+import org.example.exception.DLAppValidationsException;
 import org.example.repository.AdminRepository;
 import org.example.repository.UserRepository;
+import org.example.util.Messages;
+import org.example.util.ResponseCodes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
 
 @Component
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
@@ -22,20 +25,17 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
 
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<AdminEntity> adminInfo =  adminRepository.findByUserName(username);
-        if (adminInfo.isPresent()) {
-            System.out.println(adminInfo);
-            return adminInfo.map(CustomUserDetail::new)
-                    .orElseThrow(() -> new UsernameNotFoundException("Admin not found " + username));
-        } else {
-            Optional<UserEntity> userInfo = userRepository.findByUserName(username);
-            System.out.println(userInfo);
-            return userInfo.map(CustomUserDetail::new)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
-        }
 
+    @Override
+    public UserDetails loadUserByUsername(String username){
+        Optional<AdminEntity> adminInfo =  adminRepository.findByUserName(username);
+        Optional<UserEntity> userInfo = userRepository.findByUserName(username);
+        if (adminInfo.isPresent()) {
+            return new CustomUserDetail(adminInfo.get());
+        } else if (userInfo.isPresent()) {
+            return new CustomUserDetail(userInfo.get());
+        }
+        throw new DLAppValidationsException(ResponseCodes.UNAUTHORIZED,"username or password");
     }
 
 

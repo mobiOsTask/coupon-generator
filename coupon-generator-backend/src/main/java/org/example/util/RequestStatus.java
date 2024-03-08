@@ -5,6 +5,8 @@ public enum RequestStatus {
     SUCCESS("200", "SUCCESS"),
     NOT_FOUND("404", "Not-Found"),
     BAD_REQUEST("400", "Bad-Request"),
+    UNAUTHORIZED("401", "Unauthorized"),
+
     UNPROCESSABLE_ENTITY("422", "Unprocessable-Entity"),
     FAILURE("500", "failure");
 
